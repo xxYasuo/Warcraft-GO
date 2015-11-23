@@ -5,7 +5,7 @@
 from wcgo.utilities import ClassProperty
 
 
-class Entity:
+class _Entity:
     """Base class for all entities."""
 
     @ClassProperty
@@ -27,7 +27,7 @@ class Entity:
     cost = 0
 
 
-class LevelableEntity(Entity):
+class _LevelableEntity(_Entity):
     """Entity class which implements a level system."""
 
     max_level = None
@@ -53,7 +53,7 @@ class LevelableEntity(Entity):
         self._level = value
 
 
-class Hero(LevelableEntity):
+class Hero(_LevelableEntity):
     """Character with unique skills to spice up the game."""
 
     _passive_classes = tuple()
@@ -142,7 +142,7 @@ class Hero(LevelableEntity):
             item.execute_method(method_name, **eargs)
 
 
-class Skill(LevelableEntity):
+class Skill(_LevelableEntity):
     """Class for creating skills for heroes."""
 
     cost = 1
@@ -155,11 +155,17 @@ class Skill(LevelableEntity):
             method(self, **eargs)
 
 
-class Item(Skill):
+class Item(_Entity):
     """Item is a temporary skill that can be bought for a hero."""
 
     stay_on_death = False
     limit = 1
+
+    def execute_method(self, name, **eargs):
+        """Executes the items's method with matching name."""
+        method = getattr(type(self), name, None)
+        if method is not None:
+            method(self, **eargs)
 
     @property
     def sell_value(self):
