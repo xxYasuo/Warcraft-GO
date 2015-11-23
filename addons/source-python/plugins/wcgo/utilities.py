@@ -1,4 +1,9 @@
-"""Module for tools and utilities that are required internally."""
+﻿"""Module for tools and utilities that are required internally."""
+
+
+# Python 3
+import importlib
+import pkgutil
 
 
 class ClassProperty:
@@ -18,3 +23,13 @@ class ClassProperty:
                 raise ValueError("Both obj and cls set to None")
             cls = type(obj)
         return self.fget(cls)
+
+
+def import_modules(package):
+    """Get a dict of all modules from a package."""
+    modules = {}
+    for loader, module_name, is_pkg in pkgutil.walk_packages(package.__path__):
+        if module_name[0] != '_':
+            full_name = package.__name__ + '.' + module_name
+            modules[full_name] = importlib.import_module(full_name)
+    return modules
