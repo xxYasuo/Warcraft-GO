@@ -57,6 +57,7 @@ class Hero(LevelableEntity):
 
     _passive_classes = tuple()
     _skill_classes = tuple()
+    restricted_items = tuple()
 
     def __init__(self, level=0, xp=0):
         """Initialize a new hero."""
