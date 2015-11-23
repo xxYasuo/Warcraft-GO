@@ -1,6 +1,7 @@
 """Module for Warcraft: GO entities like heroes and skills."""
 
 
+# Warcraft: GO
 from wcgo.utilities import ClassProperty
 
 
@@ -87,7 +88,7 @@ class Hero(LevelableEntity):
             self.give_xp(value)
 
     def take_xp(self, value):
-        """Take experience points from a hero."""
+        """Take experience points from the hero."""
         if value > 0:
             raise ValueError(
                 "Positive value passed to take_xp, use give_xp instead")
@@ -95,7 +96,7 @@ class Hero(LevelableEntity):
             "Taking XP from a hero is not quite ready :(")
 
     def give_xp(self, value):
-        """Give experience points to a hero."""
+        """Give experience points to the hero."""
         if value < 0:
             raise ValueError(
                 "Negative value passed to give_xp, use take_xp instead")
@@ -132,7 +133,7 @@ class Hero(LevelableEntity):
         return skill_cls
 
     def execute_skills(self, method_name, **eargs):
-        """Execute hero's skills."""
+        """Execute the hero's skills."""
         for passive in self.passives:
             passive.execute_method(method_name, **eargs)
         for skill in self.skills:
@@ -148,7 +149,7 @@ class Skill(LevelableEntity):
     required_level = 0
 
     def execute_method(self, name, **eargs):
-        """Executes skill's method with matching name."""
+        """Executes the skill's method with matching name."""
         method = getattr(type(self), name, None)
         if method is not None:
             method(self, **eargs)
@@ -162,5 +163,5 @@ class Item(Skill):
 
     @property
     def sell_value(self):
-        """Getter the item's sell value."""
+        """Get the item's sell value."""
         return round(self.cost * 0.75)
