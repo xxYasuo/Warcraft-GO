@@ -1,0 +1,8 @@
+// Python
+__pycache__/
+*.pyc
+
+// Visual Studio
+*.vs/
+*.pyproj
+*.sln
