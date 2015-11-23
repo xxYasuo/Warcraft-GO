@@ -128,3 +128,10 @@ class Hero(LevelableEntity):
         """Add a skill class to hero's skill classes."""
         cls._skill_classes += (skill_class,)
         return skill_cls
+
+
+class Skill(LevelableEntity):
+    """Class for creating skills for heroes."""
+   
+    cost = 1
+    required_level = 0
