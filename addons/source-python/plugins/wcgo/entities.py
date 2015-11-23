@@ -150,9 +150,9 @@ class Skill(_LevelableEntity):
 
     def execute_method(self, name, **eargs):
         """Executes the skill's method with matching name."""
-        method = getattr(type(self), name, None)
+        method = getattr(self, name, None)
         if method is not None:
-            method(self, **eargs)
+            method(**eargs)
 
 
 class Item(_Entity):
@@ -163,9 +163,9 @@ class Item(_Entity):
 
     def execute_method(self, name, **eargs):
         """Executes the items's method with matching name."""
-        method = getattr(type(self), name, None)
+        method = getattr(self, name, None)
         if method is not None:
-            method(self, **eargs)
+            method(**eargs)
 
     @property
     def sell_value(self):
