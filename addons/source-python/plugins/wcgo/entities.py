@@ -101,8 +101,10 @@ class Hero(_LevelableEntity):
         if value > 0:
             raise ValueError(
                 "Positive value passed to take_xp, use give_xp instead")
-        raise NotImplementedError(
-            "Taking XP from a hero is not quite ready :(")
+        self._xp -= value
+        while self.level > 0 and self._xp < 0:
+            self._level -= 1
+            self._xp += self.required_xp
 
     def give_xp(self, value):
         """Give experience points to the hero."""
