@@ -1,4 +1,4 @@
-"""Module for Warcraft: GO entities like heroes and skills."""
+﻿"""Module for Warcraft: GO entities like heroes and skills."""
 
 
 # Warcraft: GO
@@ -7,6 +7,10 @@ from wcgo.utilities import ClassProperty
 
 class _Entity:
     """Base class for all entities."""
+
+    def __init__(self, owner=None):
+        """Initialize a new entity."""
+        self.owner = owner
 
     @ClassProperty
     def clsid(cls):
@@ -32,8 +36,9 @@ class _LevelableEntity(_Entity):
 
     max_level = None
 
-    def __init__(self, level=0):
+    def __init__(self, owner=None, level=0):
         """Initialize a new entity with levels."""
+        super().__init__(owner)
         self._level = level
 
     @property
@@ -60,9 +65,9 @@ class Hero(_LevelableEntity):
     _skill_classes = tuple()
     restricted_items = tuple()
 
-    def __init__(self, level=0, xp=0):
+    def __init__(self, owner=None, level=0, xp=0):
         """Initialize a new hero."""
-        super().__init__(level)
+        super().__init__(owner, level)
         self._xp = xp
         self.passives = [cls() for cls in self._passive_classes]
         self.skills = [cls() for cls in self._skill_classes]
