@@ -1,0 +1,1 @@
+"""Module for Warcraft: GO entities like heroes and skills."""
