@@ -64,6 +64,7 @@ class Hero(LevelableEntity):
         self._xp = xp
         self.passives = [cls() for cls in self._passive_classes]
         self.skills = [cls() for cls in self._skill_classes]
+        self.items = []
 
     @Entity.level.setter
     def level(self, value):
@@ -135,6 +136,8 @@ class Hero(LevelableEntity):
             passive.execute_method(method_name, **eargs)
         for skill in self.skills:
             skill.execute_method(method_name, **eargs)
+        for item in self.items:
+            item.execute_method(method_name, **eargs)
 
 
 class Skill(LevelableEntity):
@@ -148,3 +151,15 @@ class Skill(LevelableEntity):
         method = getattr(type(self), name, None)
         if method is not None:
             method(self, **eargs)
+
+
+class Item(Skill):
+    """Item is a temporary skill that can be bought for a hero."""
+
+    stay_on_death = False
+    limit = 1
+
+    @property
+    def sell_value(self):
+        """Getter the item's sell value."""
+        return round(self.cost * 0.75)
