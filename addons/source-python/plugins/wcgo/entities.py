@@ -8,6 +8,9 @@ from wcgo.utilities import ClassProperty
 class _Entity:
     """Base class for all entities."""
 
+    authors = tuple()
+    cost = 0
+
     def __init__(self, owner=None):
         """Initialize a new entity."""
         self.owner = owner
@@ -26,9 +29,6 @@ class _Entity:
     def description(cls):
         """Get the class's description."""
         return cls.__doc__ if cls.__doc__ is not None else ''
-
-    authors = tuple()
-    cost = 0
 
 
 class _LevelableEntity(_Entity):
