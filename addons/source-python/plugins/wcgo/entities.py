@@ -79,13 +79,13 @@ class Hero(LevelableEntity):
         """Get the hero's experience points."""
         return self._xp
 
-    @property
+    @xp.setter
     def xp(self, value):
         """Set the hero's experience points."""
-        if value < 0:
-            self.take_xp(value)
-        elif value > 0:
-            self.give_xp(value)
+        if value < self.xp:
+            self.take_xp(self.xp - value)
+        elif value > self.xp:
+            self.give_xp(value - self.xp)
 
     def take_xp(self, value):
         """Take experience points from the hero."""
