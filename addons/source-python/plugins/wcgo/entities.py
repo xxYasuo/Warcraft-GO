@@ -57,6 +57,10 @@ class _LevelableEntity(_Entity):
                 "Entity's level can't be bigger than its max_level")
         self._level = value
 
+    def is_max_level(self):
+        """Return True if the entity's level is maxed out."""
+        return self.max_level is not None and self.level >= self.max_level
+
 
 class Hero(_LevelableEntity):
     """Character with unique skills to spice up the game."""
@@ -106,16 +110,14 @@ class Hero(_LevelableEntity):
             raise ValueError(
                 "Negative value passed to give_xp, use take_xp instead")
         self._xp += value
-        while self.required_xp is not None and self._xp >= self.required_xp:
+        while not self.is_max_level() and self._xp >= self.required_xp:
             self._xp -= self.required_xp
             self._level += 1
-        if self.required_xp is None:
-            self._xp = 0
 
     @property
     def required_xp(self):
         """Get the required XP for the hero to level up."""
-        if self.max_level is not None and self.level >= self.max_level:
+        if self.is_max_level():
             return None
         return 80 + 20 * self.level
 
