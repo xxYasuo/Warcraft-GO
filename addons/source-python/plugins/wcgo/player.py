@@ -25,7 +25,7 @@ class Player(EasyPlayer):
     def __init__(self, index):
         """Initialize a new player."""
         super().__init__(index)
-        self.gold = gold
+        self.gold = 0
         self._hero = None
         self.heroes = {}
 
