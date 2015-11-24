@@ -1,6 +1,7 @@
 ﻿"""Main entry point for the plugin."""
 
 # Source.Python
+import commands
 from engines.server import engine_server
 from events import Event
 
@@ -9,6 +10,7 @@ import wcgo.configs as cfg
 import wcgo.database
 import wcgo.entities
 import wcgo.player
+import wcgo.menus
 
 
 # Globals
@@ -69,6 +71,11 @@ def _save_player_data(event):
     player = Player.from_userid(event['userid'])
     database.save_player(player)
 
+# Say command and client command decorations
+
+@commands.say.SayCommand('wcgo')
+def main_say_command(command, index, team):
+    wcgo.menus.MENUS['main'].send(index)
 
 # Skill executions, XP gain, and gold gain from now on
 
