@@ -1,8 +1,7 @@
-"""This module contains configurable settings for server operators."""
+﻿"""This module contains configurable settings for server operators."""
 
 # Imports -- these are required for this file to work, don't edit
 import os
-
 
 # Admins' SteamIDs, separated by commas
 admins = (

@@ -1,6 +1,5 @@
 ﻿"""Module for Warcraft: GO entities like heroes and skills."""
 
-
 # Warcraft: GO
 from wcgo.utilities import ClassProperty
 

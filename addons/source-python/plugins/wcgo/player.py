@@ -1,5 +1,4 @@
-"""Module for Wacraft: GO related player functionality."""
-
+﻿"""Module for Wacraft: GO related player functionality."""
 
 # Source.Python
 from filters.iterator import _IterObject

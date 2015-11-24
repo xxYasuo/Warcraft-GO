@@ -1,6 +1,5 @@
 ﻿"""Module for dealing with Warcraft: GO database."""
 
-
 # Python 3
 import sqlite3
 

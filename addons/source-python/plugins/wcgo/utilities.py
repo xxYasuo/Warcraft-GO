@@ -1,12 +1,10 @@
 ﻿"""Module for tools and utilities that are required internally."""
 
-
 # Python 3
+import collections
 import importlib
 import pkgutil
-import collections
 
-"""Class utilities for Warcraft: GO."""
 
 class ClassProperty:
     """Read-only property for classes."""
@@ -26,16 +24,17 @@ class ClassProperty:
             cls = type(obj)
         return self.fget(cls)
 
+
 class KeyDefaultDict(collections.defaultdict):
     """Key based defaultdict."""
 
     def __missing__(self, key):
+        """Call the default_factory with the key as an argument."""
         if self.default_factory is None:
             raise KeyError(key)
         default = self[key] = self.default_factory(key)
         return default
 
-"""Function utilities for Warcraft: GO."""
 
 def import_modules(package):
     """Get a dict of all modules from a package."""
