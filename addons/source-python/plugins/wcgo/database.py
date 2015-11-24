@@ -68,13 +68,14 @@ class Database:
                 continue
             hero = hero_classes[clsid](level, xp)
             self.load_hero(player.steamid, hero)
-            player.heroes.append(hero)
+            player.heroes[clsid] = hero
             if clsid == active_hero_clsid:
                 player.hero = hero
 
-    def load_hero(steamid, hero):
+    def load_hero(self, steamid, hero):
         """Load hero's data from the database."""
-        hero.xp, hero.level = self._get_hero_data(steamid, hero)
+        hero.xp, hero.level = self._get_hero_data(steamid, hero.clsid)
+        cursor = self.connection.cursor()
         for skill in hero.skills:
             cursor.execute(
                 "SELECT level FROM skills WHERE steamid=? AND hero_clsid=? AND clsid=?",
@@ -107,7 +108,7 @@ class Database:
         cursor = self.connection.cursor()
         cursor.execute(
             "SELECT level, xp FROM heroes WHERE steamid=? AND clsid=?",
-            (steamid, hero.clsid))
+            (steamid, clsid))
         data = cursor.fetchone()
         if data is None:
             return (0, 0)
