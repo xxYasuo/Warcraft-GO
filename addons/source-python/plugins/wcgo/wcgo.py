@@ -9,8 +9,10 @@ from events import Event
 import wcgo.configs as cfg
 import wcgo.database
 import wcgo.entities
-import wcgo.player
+import wcgo.heroes
 import wcgo.menus
+import wcgo.player
+import wcgo.utilities
 
 
 # Globals
@@ -20,6 +22,7 @@ database = None
 def load():
     """Setup the plugin."""
     # Make sure there are proper heroes on the server
+    wcgo.utilities.import_modules(wcgo.heroes)
     heroes = wcgo.entities.Hero.get_classes()
     if not heroes:
         raise NotImplementedError(
