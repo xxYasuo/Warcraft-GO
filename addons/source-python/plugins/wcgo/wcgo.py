@@ -32,16 +32,15 @@ def load():
             raise ValueError(
                 "Invalid starting hero clsid: {0}".format(clsid))
 
-    # Initialize the database, register events, and restart the game
+    # Initialize the database and restart the game
     global database
     database = wcgo.database.Database(cfg.database_path)
-    wcgo.events.register()
     engine_server.server_command('mp_restartgame 1\n')
 
 
 def unload():
     """Finalize the plugin."""
-    wcgo.events.unregister()
+    wcgo.events.Event.unregister_all()
     for userid in active_players:
         player = Player.from_userid(userid)
         database.save_player(player)
