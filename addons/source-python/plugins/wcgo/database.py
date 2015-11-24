@@ -3,6 +3,9 @@
 # Python 3
 import sqlite3
 
+# Warcraft: GO
+import wcgo.entities
+
 
 class Database:
     """OOP implementation around sqlite3 databases for Warcraft: Go."""
@@ -31,12 +34,19 @@ class Database:
             PRIMARY KEY (steamid, hero_clsid, clsid)
         )''')
 
+    def close(self, commit=True):
+        """Close the database connection."""
+        if commit is True:
+            self.connection.commit()
+        self.connection.close()
+        self.connection = None
+
     def save_player(self, player):
         """Save player's data into the database."""
         self.execute(
             "INSERT OR REPLACE INTO players VALUES (?, ?, ?)",
             (player.steamid, player.gold, player.hero.clsid))
-        save_hero(player.steamid, player.hero)
+        self.save_hero(player.steamid, player.hero)
 
     def save_hero(self, steamid, hero):
         """Save hero's data into the database."""
@@ -51,16 +61,18 @@ class Database:
 
     def load_player(self, player):
         """Load player's data from the database."""
-        hero_classes = NotImplementedError()
+        hero_classes = wcgo.entities.Hero.get_classes()
         player.gold, active_hero_clsid = self._get_player_data(player.steamid)
-        for clsid, level, xp in self._get_heroes_data():
+        for clsid, level, xp in self._get_heroes_data(player.steamid):
             if clsid not in hero_classes:
                 continue
             hero = hero_classes[clsid](level, xp)
-            load_hero_data(player.steamid, hero)
+            self.load_hero(player.steamid, hero)
             player.heroes.append(hero)
             if clsid == active_hero_clsid:
                 player.hero = hero
+        if player.hero is None and player.heroes:
+            player.hero = player.heroes[0]
 
     def load_hero(steamid, hero):
         """Load hero's data from the database."""
