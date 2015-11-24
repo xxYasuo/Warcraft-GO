@@ -1,4 +1,4 @@
-"""Hero test."""
+﻿"""Hero test."""
 
 # Warcraft: GO
 import wcgo.entities
@@ -10,7 +10,7 @@ class Test_Hero(wcgo.entities.Hero):
     restricted_items = tuple()
 
 
-@Test.skill
+@Test_Hero.skill
 class Speed(wcgo.entities.Skill):
     'Skill test which increases speed.'
     max_level = 2

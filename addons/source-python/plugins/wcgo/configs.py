@@ -61,8 +61,7 @@ reset_skills_cost = 50
 
 # Starting heroes for when an user joins the server for the first time
 starting_heroes = (
-    'Dummy',
-    'Example',
+    'Test_Hero',
 )
 
 # Hero category to use when no category is defined

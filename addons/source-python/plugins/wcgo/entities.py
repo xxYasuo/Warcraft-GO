@@ -157,7 +157,7 @@ class Hero(_LevelableEntity, metaclass=_HeroMeta):
     @classmethod
     def skill(cls, skill_cls):
         """Add a skill class to hero's skill classes."""
-        cls._skill_classes += (skill_class,)
+        cls._skill_classes += (skill_cls,)
         return skill_cls
 
     def execute_skills(self, method_name, **eargs):
