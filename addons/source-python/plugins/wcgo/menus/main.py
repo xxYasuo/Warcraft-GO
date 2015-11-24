@@ -10,11 +10,10 @@ from wcgo.menus.heroes import current_hero_menu
 
 def _main_menu_select(menu, index, choice):
     """Select callback for main menu."""
-    if choice.value is None:
-        return
-    menu = choice.value
-    menu.previous_menu = menu
-    return menu
+    next_menu = choice.value
+    if next_menu is not None:
+        next_menu.previous_menu = menu
+        return next_menu
 
 
 menu_main = menus.SimpleMenu(
