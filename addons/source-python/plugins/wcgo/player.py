@@ -29,6 +29,7 @@ class Player(players.entity.Player):
             self.gold = 0
             self._hero = None
             self.heroes = {}
+            self.restrictions = set()
             Player._registered.add(self.userid)
 
     @property

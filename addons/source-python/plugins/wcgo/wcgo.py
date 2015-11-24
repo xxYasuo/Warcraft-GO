@@ -6,7 +6,11 @@ import random
 # Source.Python
 from commands.say import SayCommand
 from engines.server import engine_server
+from entities.helpers import index_from_pointer
+from entities.hooks import EntityPreHook
+from entities.hooks import EntityCondition
 from events import Event
+from weapons.entity import Weapon
 
 # Warcraft: GO
 import wcgo.configs as cfg
@@ -140,3 +144,28 @@ def _on_player_death(event):
 @Event('player_hurt')
 def _on_player_hurt(event):
     _execute_attacker_victim_skills(event, 'player_attack', 'player_victim')
+
+
+# Restriction system hooks
+
+@EntityPreHook(EntityCondition.is_player, 'bump_weapon')
+def _pre_bump_weapon(args):
+    player = wcgo.player.Player(index_from_pointer(args[0]))
+    weapon = Weapon(index_from_pointer(args[1]))
+    if weapon.classname in player.restrictions:
+        return False
+
+
+@EntityPreHook(EntityCondition.is_player, 'buy_internal')
+def _on_buy_internal(args):
+    player = wcgo.player.Player(index_from_pointer(args[0]))
+    weapon = 'weapon_{}'.format(args[1])
+    if weapon in player.restrictions:
+        return 0
+
+
+@Event('player_death')
+def _clear_restrictions_and_gravity(event):
+    player = wcgo.player.Player.from_userid(event['userid'])
+    player.restrictions.clear()
+    player.gravity = 1.0
