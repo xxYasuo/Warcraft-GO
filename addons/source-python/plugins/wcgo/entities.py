@@ -80,6 +80,7 @@ class Hero(_LevelableEntity, metaclass=_HeroMeta):
     _passive_classes = tuple()
     _skill_classes = tuple()
     restricted_items = tuple()
+    _register = False
 
     @staticmethod
     def get_classes():
