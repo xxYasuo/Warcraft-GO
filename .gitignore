@@ -6,3 +6,6 @@ __pycache__/
 *.vs/
 *.pyproj
 *.sln
+
+// Vim
+*.swp
