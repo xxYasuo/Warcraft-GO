@@ -8,7 +8,6 @@ from events import Event
 import wcgo.configs as cfg
 import wcgo.database
 import wcgo.entities
-import wcgo.events
 from wcgo.player import Player
 
 
@@ -40,7 +39,6 @@ def load():
 
 def unload():
     """Finalize the plugin."""
-    wcgo.events.Event.unregister_all()
     for userid in active_players:
         player = Player.from_userid(userid)
         database.save_player(player)
