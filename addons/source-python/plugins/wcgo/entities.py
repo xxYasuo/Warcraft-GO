@@ -186,7 +186,7 @@ class Skill(_LevelableEntity):
 class Item(_Entity):
     """Item is a temporary skill that can be bought for a hero."""
 
-    stay_on_death = False
+    stay_after_death = False
     limit = 1
     category = cfg.default_item_category
 
