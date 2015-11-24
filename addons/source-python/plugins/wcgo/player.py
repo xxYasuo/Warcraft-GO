@@ -21,22 +21,33 @@ class PlayerIter(_IterObject):
 class Player(players.entity.Player):
     """Player class with WCGO functionality."""
 
-    _registered = set()
+    _data = {}
 
     def __init__(self, index):
         """Initialize a new player."""
         super().__init__(index)
-        if self.userid not in Player._registered:
-            self.gold = 0
-            self._hero = None
-            self.heroes = {}
-            self.restrictions = set()
-            Player._registered.add(self.userid)
+        if self.userid not in Player._data:
+            Player._data[self.userid] = {
+                'gold': 0,
+                'hero': None,
+                'heroes': {},
+                'restrictions': set(),
+            }
+
+    @property
+    def gold(self):
+        """Get the player's gold."""
+        return Player._data[self.userid]['gold']
+
+    @gold.setter
+    def gold(self, value):
+        """Set the player's gold."""
+        Player._data[self.userid]['gold'] = value
 
     @property
     def hero(self):
         """Get the player's active hero."""
-        return self._hero
+        return Player._data[self.userid]['hero']
 
     @hero.setter
     def hero(self, value):
@@ -48,7 +59,17 @@ class Player(players.entity.Player):
             if self.hero is not None:
                 self.hero.items.clear()
             self.restrictions.clear()
-            self._hero = value
+            Player._data[self.userid]['hero'] = value
+
+    @property
+    def heroes(self):
+        """Get the player's heroes."""
+        return Player._data[self.userid]['heroes']
+
+    @property
+    def restrictions(self):
+        """Get the player's restrictions."""
+        return Player._data[self.userid]['restrictions']
 
     @classmethod
     def from_userid(cls, userid):
