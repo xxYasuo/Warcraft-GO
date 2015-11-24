@@ -62,12 +62,29 @@ class _LevelableEntity(_Entity):
         return self.max_level is not None and self.level >= self.max_level
 
 
-class Hero(_LevelableEntity):
+class _HeroMeta(type):
+    """Metaclass for storing all the hero classes into a dict."""
+
+    _classes = {}
+
+    def __init__(cls, *args, **kwargs):
+        """Initialize a hero class and add it to the classes dict."""
+        super().__init__()
+        if getattr(cls, '_register', True) is not False:
+            _HeroMeta._classes[cls.clsid] = cls
+
+
+class Hero(_LevelableEntity, metaclass=_HeroMeta):
     """Character with unique skills to spice up the game."""
 
     _passive_classes = tuple()
     _skill_classes = tuple()
     restricted_items = tuple()
+
+    @staticmethod
+    def get_classes():
+        """Get a dict of all the registered hero classes."""
+        return _HeroMeta._classes
 
     def __init__(self, owner=None, level=0, xp=0):
         """Initialize a new hero."""
