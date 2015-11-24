@@ -135,7 +135,7 @@ def _current_hero_menu_select(menu, index, choice):
         if player.gold >= cfg.reset_skills_cost:
             for skill in player.hero.skills:
                 skill.level = 0
-            player.gold -= 50
+            player.gold -= cfg.reset_skills_cost
     else:
         skill = choice.value
         if (skill.cost <= player.hero.skill_points and

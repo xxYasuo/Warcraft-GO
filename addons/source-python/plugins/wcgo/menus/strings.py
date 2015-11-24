@@ -21,7 +21,7 @@ CURRENT_HERO_MENU = {
 
 OWNED_HEROES_MENU = {
     'Title': 'Warcraft (Owned Heroes)',
-    'Change': 'Change'
-    'Hero': '{hero} ({levelinfo})'
-    'Skill': '{skill} ({levelinfo})\n{description}'
+    'Change': 'Change',
+    'Hero': '{hero} ({levelinfo})',
+    'Skill': '{skill} ({levelinfo})\n{description}',
 }

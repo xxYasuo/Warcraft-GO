@@ -69,7 +69,7 @@ class _HeroMeta(type):
 
     def __init__(cls, *args, **kwargs):
         """Initialize a hero class and add it to the classes dict."""
-        super().__init__()
+        super().__init__(*args, **kwargs)
         if getattr(cls, '_register', True) is not False:
             _HeroMeta._classes[cls.clsid] = cls
 
@@ -96,11 +96,11 @@ class Hero(_LevelableEntity, metaclass=_HeroMeta):
         self.skills = [cls() for cls in self._skill_classes]
         self.items = []
 
-    @Entity.level.setter
+    @_LevelableEntity.level.setter
     def level(self, value):
         """Set the hero's level."""
         self._xp = 0
-        Entity.level.fset(self, value)
+        _LevelableEntity.level.fset(self, value)
 
     @property
     def xp(self):

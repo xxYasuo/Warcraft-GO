@@ -1,7 +1,7 @@
 ﻿"""Main entry point for the plugin."""
 
 # Source.Python
-import commands
+from commands.say import SayCommand
 from engines.server import engine_server
 from events import Event
 
@@ -73,9 +73,9 @@ def _save_player_data(event):
 
 # Say command and client command decorations
 
-@commands.say.SayCommand('wcgo')
-def main_say_command(command, index, team):
-    wcgo.menus.MENUS['main'].send(index)
+@SayCommand('wcgo')
+def _main_say_command(command, index, team):
+    MENUS['main'].send(index)
 
 # Skill executions, XP gain, and gold gain from now on
 

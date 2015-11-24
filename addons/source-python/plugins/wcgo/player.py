@@ -1,9 +1,9 @@
 ﻿"""Module for Wacraft: GO related player functionality."""
 
 # Source.Python
+from entities.helpers import index_from_edict
 from filters.iterator import _IterObject
 from players import PlayerGenerator
-from players.helpers import index_from_edict
 
 # EasyPlayer
 from easyplayer import EasyPlayer
@@ -19,7 +19,7 @@ class PlayerIter(_IterObject):
             yield Player(index_from_edict(edict))
 
 
-class Player(easyplayer.EasyPlayer):
+class Player(EasyPlayer):
     """Player class with WCGO functionality."""
 
     def __init__(self, index):

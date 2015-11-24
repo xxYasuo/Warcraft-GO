@@ -57,6 +57,8 @@ show_gold_messages = True
 # Prefix for messages sent by the plugin
 message_prefix = '>> WCGO: '
 
+reset_skills_cost = 50
+
 # Starting heroes for when an user joins the server for the first time
 starting_heroes = (
     'Dummy',
