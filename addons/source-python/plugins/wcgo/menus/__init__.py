@@ -1,8 +1,9 @@
-"""Module for containing Wacraft: GO menu and admin systems."""
+﻿"""Package for Wacraft: GO menu and admin systems."""
 
 # Warcraft: GO
-from wcgo.menus.main import menu as mainmenu
+from wcgo.menus.main import main_menu
 
-menus = {
-    'main': mainmenu,
+
+MENUS = {
+    'main': main_menu,
 }

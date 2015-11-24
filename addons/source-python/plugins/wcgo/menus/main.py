@@ -1,28 +1,29 @@
-"""Sub-module for Wacraft: GO initial menu."""
+﻿"""Provides the main_menu instance."""
 
 # Source.Python
-from menus import SimpleMenu
-from menus import SimpleOption
-from menus import Text
+import menus
 
 # Warcraft: GO
-from wcgo.menus.heroes import currenthero
-from wcgo.menus.strings import mainmenu
-from wcgo.menus.strings import separator
-from wcgo.menus.strings import close
+import wcgo.menus.strings as strings
+from wcgo.menus.heroes import current_hero_menu
 
-def _main_menu_selection(menu, index, choice):
+
+def _main_menu_select(menu, index, choice):
+    """Select callback for main menu."""
     if choice.value is None:
         return
     menu = choice.value
     menu.previous_menu = menu
     return menu
 
-menu = SimpleMenu(select_callback=_main_menu_selection)
-menu.append([
-    Text(mainmenu['title']),
-    Text(separator),
-    SimpleOption(1, mainmenu['currenthero'], currenthero),
-    Text(separator),
-    SimpleOption(9, close, None)
-])
+
+menu_main = menus.SimpleMenu(
+    [
+        menus.Text(strings.MAIN_MENU['Title']),
+        menus.Text(strings.SEPARATOR),
+        menus.SimpleOption(1, strings.MAIN_MENU['Current Hero'], current_hero_menu),
+        menus.Text(strings.SEPARATOR),
+        menus.SimpleOption(9, strings.CLOSE, None)
+    ],
+    select_callback=_main_menu_select
+)

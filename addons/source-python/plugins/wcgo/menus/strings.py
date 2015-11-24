@@ -1,14 +1,14 @@
-"""Module for containing Wacraft: GO menu strings."""
+﻿"""Module for Wacraft: GO menu strings."""
 
-separator = ' '
-back = 'Back'
-next = 'Next'
-close = 'Close'
+SEPARATOR = ' '
+BACK = 'Back'
+NEXT = 'Next'
+CLOSE = 'Close'
 
-mainmenu = {
-    'title':        'Warcraft: Main Menu',
-    'gold':         '- {gold} Gold',
-    'currenthero':  'Current Hero',
-    'ownedheroes':  'Owned Heroes',
-    'buyheroes':    'Buy Heroes',
+MAIN_MENU = {
+    'Title': 'Warcraft: Main Menu',
+    'Gold': '- {gold} Gold',
+    'Current Hero': 'Current Hero',
+    'Owned Heroes': 'Owned Heroes',
+    'Buy Heroes': 'Buy Heroes',
 }
