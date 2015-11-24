@@ -27,7 +27,7 @@ class Player(easyplayer.EasyPlayer):
         super().__init__(index)
         self.gold = gold
         self._hero = None
-        self.heroes = []
+        self.heroes = {}
 
     @property
     def hero(self):
@@ -37,7 +37,7 @@ class Player(easyplayer.EasyPlayer):
     @hero.setter
     def hero(self, value):
         """Set the player's active hero."""
-        if value not in self.heroes:
+        if value.clsid not in self.heroes:
             raise ValueError(
                 "Hero {0} not owned by {1}".format(value.clsid, self.steamid))
         if value != self.hero:
