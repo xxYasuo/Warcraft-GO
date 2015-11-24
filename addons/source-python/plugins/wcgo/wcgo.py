@@ -8,17 +8,16 @@ from events import Event
 import wcgo.configs as cfg
 import wcgo.database
 import wcgo.entities
-from wcgo.player import Player
+import wcgo.player
 
 
 # Globals
 database = None
-active_players = set()
 
 
 def load():
     """Setup the plugin."""
-    # Make sure there are heroes on the server
+    # Make sure there are proper heroes on the server
     heroes = Hero.get_subclasses()
     if not heroes:
         raise NotImplementedError(
@@ -34,41 +33,38 @@ def load():
     # Initialize the database and restart the game
     global database
     database = wcgo.database.Database(cfg.database_path)
-    engine_server.server_command('mp_restartgame 1\n')
+    engine_server.server_command('mp_restartgame_immediate 1\n')
+    for player in wcgo.player.PlayerIter():
+        _init_player(player)
 
 
 def unload():
     """Finalize the plugin."""
-    for userid in active_players:
-        player = Player.from_userid(userid)
+    for player in wcgo.player.PlayerIter():
         database.save_player(player)
-    active_players.clear()
     database.close()
 
 
-@Event('player_spawn')
-def _activate_player(event):
-    """Activate player when he spawns for the first time."""
-    userid = event['userid']
-    if userid not in active_players:
-        player = Player.from_userid(userid)
-        database.load_player(player)
-        hero_classes = wcgo.entities.Hero.get_classes()
-        for clsid in cfg.starting_heroes:
-            if clsid in hero_classes and clsid not in player.heroes:
-                player.heroes[clsid] = hero_classes[clsid]()
-        if player.hero is None:
-            player.hero = player.heroes[0]
-        active_players.add(userid)
-    else:
-        database.save_player(player)
+def _init_player(player):
+    """Initialize the player."""
+    database.load_player(player)
+    hero_classes = wcgo.entities.Hero.get_classes()
+    for clsid in cfg.starting_heroes:
+        if clsid in hero_classes and clsid not in player.heroes:
+            player.heroes[clsid] = hero_classes[clsid]()
+    if player.hero is None:
+        player.hero = player.heroes[0]
 
 
-@Event('player_disconnect')
-def _deactivate_player(event):
-    """Deactivate player when he disconnects."""
-    userid = event['userid']
-    if userid in active_players:
-        player = Player.from_userid(userid)
-        database.save_player(player)
-        active_players.remove(userid)
+@Event('player_activate')
+def _on_player_activate(event):
+    """Initialize the player the when he gets activated."""
+    player = Player.from_userid(event['userid'])
+    _init_player(player)
+
+
+@Event('player_disconnect', 'player_spawn')
+def _save_player_data(event):
+    """Save the player's data when he disconnects or spawns."""
+    player = Player.from_userid(userid)
+    database.save_player(player)
