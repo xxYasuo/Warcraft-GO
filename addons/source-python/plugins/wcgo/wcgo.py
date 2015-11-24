@@ -57,6 +57,8 @@ def _activate_player(event):
         for clsid in cfg.starting_heroes:
             if clsid in hero_classes and clsid not in player.heroes:
                 player.heroes[clsid] = hero_classes[clsid]()
+        if player.hero is None:
+            player.hero = player.heroes[0]
         active_players.add(userid)
     else:
         database.save_player(player)

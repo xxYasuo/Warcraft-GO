@@ -71,8 +71,6 @@ class Database:
             player.heroes.append(hero)
             if clsid == active_hero_clsid:
                 player.hero = hero
-        if player.hero is None and player.heroes:
-            player.hero = player.heroes[0]
 
     def load_hero(steamid, hero):
         """Load hero's data from the database."""
