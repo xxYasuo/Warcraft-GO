@@ -68,3 +68,50 @@ def _save_player_data(event):
     """Save the player's data when he disconnects or spawns."""
     player = Player.from_userid(event['userid'])
     database.save_player(player)
+
+
+# Skill executions, XP gain, and gold gain from now on
+
+def _execute_player_skills(event):
+    """Execute skills for one player."""
+    player = Player.from_userid(event['userid'])
+    eargs = event.keys.to_dict()
+    del eargs['userid']
+    eargs['player'] = player
+    player.hero.execute_skills(event.get_name(), **eargs)
+
+
+def _execute_attacker_victim_skills(event, attacker_ename, victim_ename):
+    """Execute attacker's and victim's skills."""
+    attacker = Player.from_userid(event['attacker'])
+    victim = Player.from_userid(event['userid'])
+    if victim != attacker:
+        eargs = event.keys.to_dict()
+        del eargs['userid']
+        eargs.update(attacker=attacker, victim=victim)
+        attacker.hero.execute_skills(attacker_ename, player=attacker, **eargs)
+        victim.hero.execute_skills(victim_ename, player=victim, **eargs)
+
+
+@Event('player_spawn')
+def _on_player_spawn(event):
+    if event['teamnum'] in (2, 3):
+        _execute_player_skills(event)
+
+
+@Event('player_jump')
+def _on_player_jump(event):
+    _execute_player_skills(event)
+
+
+@Event('player_death')
+def _on_player_death(event):
+    _execute_attacker_victim_skills(event, 'player_kill', 'player_death')
+    victim = Player.from_userid(event['userid'])
+    victim.hero.items = [item for item in victim.hero.items
+                         if item.stay_after_death]
+
+
+@Event('player_hurt')
+def _on_player_hurt(event):
+    _execute_attacker_victim_skills(event, 'player_attack', 'player_victim')
