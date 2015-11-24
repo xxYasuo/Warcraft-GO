@@ -1,6 +1,7 @@
 ﻿"""Module for Warcraft: GO entities like heroes and skills."""
 
 # Warcraft: GO
+import wcgo.configs as cfg
 from wcgo.utilities import ClassProperty
 
 
@@ -79,6 +80,7 @@ class Hero(_LevelableEntity, metaclass=_HeroMeta):
     _passive_classes = tuple()
     _skill_classes = tuple()
     restricted_items = tuple()
+    category = cfg.default_hero_category
     _register = False
 
     @staticmethod
@@ -138,7 +140,7 @@ class Hero(_LevelableEntity, metaclass=_HeroMeta):
         """Get the required XP for the hero to level up."""
         if self.is_max_level():
             return None
-        return 80 + 20 * self.level
+        return cfg.required_xp_base + cfg.required_xp_addition * self.level
 
     @property
     def skill_point(self):
@@ -186,6 +188,7 @@ class Item(_Entity):
 
     stay_on_death = False
     limit = 1
+    category = cfg.default_item_category
 
     def execute_method(self, name, **eargs):
         """Executes the items's method with matching name."""
@@ -196,4 +199,4 @@ class Item(_Entity):
     @property
     def sell_value(self):
         """Get the item's sell value."""
-        return round(self.cost * 0.75)
+        return round(self.cost * cfg.item_sell_value_multiplier)
