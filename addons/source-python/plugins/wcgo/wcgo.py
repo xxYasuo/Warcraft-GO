@@ -61,7 +61,7 @@ def _init_player(player):
         if clsid in hero_classes and clsid not in player.heroes:
             player.heroes[clsid] = hero_classes[clsid]()
     if player.hero is None:
-        random_clsid = random.choice(cfg.starting_heroes[0])
+        random_clsid = random.choice(cfg.starting_heroes)
         player.hero = player.heroes[random_clsid]
 
 
