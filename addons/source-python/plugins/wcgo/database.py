@@ -43,7 +43,7 @@ class Database:
 
     def save_player(self, player):
         """Save player's data into the database."""
-        self.execute(
+        self.connection.execute(
             "INSERT OR REPLACE INTO players VALUES (?, ?, ?)",
             (player.steamid, player.gold, player.hero.clsid))
         self.save_hero(player.steamid, player.hero)
@@ -51,12 +51,12 @@ class Database:
     def save_hero(self, steamid, hero):
         """Save hero's data into the database."""
         self.connection.execute(
-            "INSERT OR REPLACE INTO heroes VALUES (?, ?, ?, ?, ?)",
+            "INSERT OR REPLACE INTO heroes VALUES (?, ?, ?, ?)",
             (steamid, hero.clsid, hero.level, hero.xp))
         for skill in hero.skills:
             self.connection.execute(
                 "INSERT OR REPLACE INTO skills VALUES (?, ?, ?, ?)",
-                (steamid, hero_clsid, skill.clsid, skill.level))
+                (steamid, hero.clsid, skill.clsid, skill.level))
         self.connection.commit()
 
     def load_player(self, player):
