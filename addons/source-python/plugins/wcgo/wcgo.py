@@ -1,5 +1,8 @@
 ﻿"""Main entry point for the plugin."""
 
+# Python 3
+import random
+
 # Source.Python
 from commands.say import SayCommand
 from engines.server import engine_server
@@ -58,7 +61,8 @@ def _init_player(player):
         if clsid in hero_classes and clsid not in player.heroes:
             player.heroes[clsid] = hero_classes[clsid]()
     if player.hero is None:
-        player.hero = player.heroes[0]
+        random_clsid = random.choice(cfg.starting_heroes[0])
+        player.hero = player.heroes[random_clsid]
 
 
 @Event('player_activate')
