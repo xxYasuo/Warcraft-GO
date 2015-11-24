@@ -147,22 +147,24 @@ def _on_player_death(event):
 def _on_player_hurt(event):
     _execute_attacker_victim_skills(event, 'player_attack', 'player_victim')
 
+# Take damage system hooks
 
 @EntityPreHook(EntityCondition.is_player, 'on_take_damage')
 def _pre_on_take_damage(args):
     victim_index = index_from_pointer(args[0])
     victim = wcgo.player.Player(victim_index)
+    attacker = wcgo.player.Player(info.attacker) if info.attacker else None
     info = make_object(TakeDamageInfo, args[1])
-    if info.attacker and info.attacker != victim_index:
-        attacker = wcgo.player.Player(info.attacker)
+    if info.attacker != victim_index:
         eargs = {
             'attacker': attacker,
-            'defender': defender,
+            'victim': victim,
             'info': info,
-            'weapon': attacker.active_weapon.class_name,
+            'weapon': attacker.active_weapon.class_name if attacker else None,
         }
-        defender.hero.execute_skills('player_pre_victim', player=victim, **eargs)
-        attacker.hero.execute_skills('player_pre_attack', player=attacker, **eargs)
+        victim.hero.execute_skills('player_pre_victim', player=victim, **eargs)
+        if attacker:
+            attacker.hero.execute_skills('player_pre_attack', player=attacker, **eargs)
 
 
 # Restriction system hooks
