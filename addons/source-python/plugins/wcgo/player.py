@@ -4,6 +4,7 @@
 from entities.helpers import index_from_edict
 from filters.iterator import _IterObject
 from players import PlayerGenerator
+from players.helpers import index_from_userid
 import players.entity
 
 
@@ -48,3 +49,8 @@ class Player(players.entity.Player):
                 self.hero.items.clear()
             self.restrictions.clear()
             self._hero = value
+
+    @classmethod
+    def from_userid(cls, userid):
+        """Return an instance of the player from an userid."""
+        return cls(index_from_userid(userid))

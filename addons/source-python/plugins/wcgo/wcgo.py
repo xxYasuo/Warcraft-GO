@@ -6,10 +6,12 @@ import random
 # Source.Python
 from commands.say import SayCommand
 from engines.server import engine_server
+from entities import TakeDamageInfo
 from entities.helpers import index_from_pointer
 from entities.hooks import EntityPreHook
 from entities.hooks import EntityCondition
 from events import Event
+from memory import make_object
 from weapons.entity import Weapon
 
 # Warcraft: GO
@@ -112,9 +114,9 @@ def _execute_player_skills(event):
 
 def _execute_attacker_victim_skills(event, attacker_ename, victim_ename):
     """Execute attacker's and victim's skills."""
-    attacker = wcgo.player.Player.from_userid(event['attacker'])
     victim = wcgo.player.Player.from_userid(event['userid'])
-    if victim != attacker:
+    if event['userid'] != event['attacker'] and event['attacker']:
+        attacker = wcgo.player.Player.from_userid(event['attacker'])
         eargs = event.variables.as_dict()
         del eargs['userid']
         eargs.update(attacker=attacker, victim=victim)
@@ -144,6 +146,23 @@ def _on_player_death(event):
 @Event('player_hurt')
 def _on_player_hurt(event):
     _execute_attacker_victim_skills(event, 'player_attack', 'player_victim')
+
+
+@EntityPreHook(EntityCondition.is_player, 'on_take_damage')
+def _pre_on_take_damage(args):
+    victim_index = index_from_pointer(args[0])
+    victim = wcgo.player.Player(victim_index)
+    info = make_object(TakeDamageInfo, args[1])
+    if info.attacker and info.attacker != victim_index:
+        attacker = wcgo.player.Player(info.attacker)
+        eargs = {
+            'attacker': attacker,
+            'defender': defender,
+            'info': info,
+            'weapon': attacker.active_weapon.class_name,
+        }
+        defender.hero.execute_skills('player_pre_victim', player=victim, **eargs)
+        attacker.hero.execute_skills('player_pre_attack', player=attacker, **eargs)
 
 
 # Restriction system hooks
