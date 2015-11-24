@@ -6,7 +6,13 @@ import menus
 # Warcraft: GO
 import wcgo.menus.strings as strings
 from wcgo.menus.heroes import current_hero_menu
+from wcgo.menus.heroes import owned_heroes_menu
+from wcgo.menus.heroes import buy_heroes_menu
+from wcgo.player import Player
 
+def _main_menu_build(menu, index):
+    player = Player(index)
+    menu[1].format(gold=player.gold)
 
 def _main_menu_select(menu, index, choice):
     """Select callback for main menu."""
@@ -15,14 +21,16 @@ def _main_menu_select(menu, index, choice):
         next_menu.previous_menu = menu
         return next_menu
 
-
-menu_main = menus.SimpleMenu(
+main_menu = menus.SimpleMenu(
     [
         menus.Text(strings.MAIN_MENU['Title']),
+        menus.Text(strings.MAIN_MENU['Gold']),
         menus.Text(strings.SEPARATOR),
         menus.SimpleOption(1, strings.MAIN_MENU['Current Hero'], current_hero_menu),
+        menus.SimpleOption(2, strings.MAIN_MENU['Owned Heroes'], owned_heroes_menu),
+        menus.SimpleOption(3, strings.MAIN_MENU['Buy Heroes'], buy_heroes_menu),
         menus.Text(strings.SEPARATOR),
         menus.SimpleOption(9, strings.CLOSE, None)
     ],
-    select_callback=_main_menu_select
+    build_callback=_main_menu_build, select_callback=_main_menu_select
 )

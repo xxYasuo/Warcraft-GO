@@ -12,3 +12,9 @@ MAIN_MENU = {
     'Owned Heroes': 'Owned Heroes',
     'Buy Heroes': 'Buy Heroes',
 }
+
+CURRENT_HERO_MENU = {
+    'Title': '{hero} ({levelinfo})',
+    'Skill': '{skill} ({levelinfo})',
+    'Reset': 'Reset Skills ({gold} Gold)',
+}

@@ -143,7 +143,7 @@ class Hero(_LevelableEntity, metaclass=_HeroMeta):
         return cfg.required_xp_base + cfg.required_xp_addition * self.level
 
     @property
-    def skill_point(self):
+    def skill_points(self):
         """Get the amount of hero's unused skill points."""
         used_points = sum(skill.level * skill.cost for skill in self.skills)
         return self.level - used_points
