@@ -4,7 +4,7 @@
 import menus
 
 # Warcraft: GO
-import wcgo.menus.strings as strings
+from wcgo.menus import strings
 
 
 class PagedMenu(menus.PagedMenu):

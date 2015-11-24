@@ -20,7 +20,7 @@ database = None
 def load():
     """Setup the plugin."""
     # Make sure there are proper heroes on the server
-    heroes = Hero.get_subclasses()
+    heroes = wcgo.entities.Hero.get_classes()
     if not heroes:
         raise NotImplementedError(
             "There are no heroes on the server")
@@ -61,27 +61,29 @@ def _init_player(player):
 @Event('player_activate')
 def _on_player_activate(event):
     """Initialize the player the when he gets activated."""
-    player = Player.from_userid(event['userid'])
+    player = wcgo.player.Player.from_userid(event['userid'])
     _init_player(player)
 
 
 @Event('player_disconnect', 'player_spawn')
 def _save_player_data(event):
     """Save the player's data when he disconnects or spawns."""
-    player = Player.from_userid(event['userid'])
+    player = wcgo.player.Player.from_userid(event['userid'])
     database.save_player(player)
+
 
 # Say command and client command decorations
 
 @SayCommand('wcgo')
 def _main_say_command(command, index, team):
-    MENUS['main'].send(index)
+    wcgo.menus.MENUS['main'].send(index)
+
 
 # Skill executions, XP gain, and gold gain from now on
 
 def _execute_player_skills(event):
     """Execute skills for one player."""
-    player = Player.from_userid(event['userid'])
+    player = wcgo.player.Player.from_userid(event['userid'])
     eargs = event.keys.to_dict()
     del eargs['userid']
     eargs['player'] = player
@@ -90,8 +92,8 @@ def _execute_player_skills(event):
 
 def _execute_attacker_victim_skills(event, attacker_ename, victim_ename):
     """Execute attacker's and victim's skills."""
-    attacker = Player.from_userid(event['attacker'])
-    victim = Player.from_userid(event['userid'])
+    attacker = wcgo.player.Player.from_userid(event['attacker'])
+    victim = wcgo.player.Player.from_userid(event['userid'])
     if victim != attacker:
         eargs = event.keys.to_dict()
         del eargs['userid']
@@ -114,7 +116,7 @@ def _on_player_jump(event):
 @Event('player_death')
 def _on_player_death(event):
     _execute_attacker_victim_skills(event, 'player_kill', 'player_death')
-    victim = Player.from_userid(event['userid'])
+    victim = wcgo.player.Player.from_userid(event['userid'])
     victim.hero.items = [item for item in victim.hero.items
                          if item.stay_after_death]
 

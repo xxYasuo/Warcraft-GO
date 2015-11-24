@@ -4,14 +4,16 @@
 import menus
 
 # Warcraft: GO
-import wcgo.menus.strings as strings
+from wcgo.menus import strings
 from wcgo.menus.heroes import current_hero_menu
 from wcgo.menus.heroes import owned_categories_menu
 from wcgo.player import Player
 
+
 def _main_menu_build(menu, index):
     player = Player(index)
     menu[1].format(gold=player.gold)
+
 
 def _main_menu_select(menu, index, choice):
     next_menu = choice.value
