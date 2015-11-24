@@ -70,7 +70,7 @@ class _HeroMeta(type):
     def __init__(cls, *args, **kwargs):
         """Initialize a hero class and add it to the classes dict."""
         super().__init__(*args, **kwargs)
-        if getattr(cls, '_register', True) is not False:
+        if cls.__dict__.get('_register', True):
             _HeroMeta._classes[cls.clsid] = cls
 
 
