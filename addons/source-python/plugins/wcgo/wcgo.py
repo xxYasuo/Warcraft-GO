@@ -66,5 +66,5 @@ def _on_player_activate(event):
 @Event('player_disconnect', 'player_spawn')
 def _save_player_data(event):
     """Save the player's data when he disconnects or spawns."""
-    player = Player.from_userid(userid)
+    player = Player.from_userid(event['userid'])
     database.save_player(player)
