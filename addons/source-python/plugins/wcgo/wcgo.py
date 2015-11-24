@@ -41,7 +41,7 @@ def load():
     # Initialize the database and restart the game
     global database
     database = wcgo.database.Database(cfg.database_path)
-    engine_server.server_command('mp_restartgame_immediate 1\n')
+    engine_server.server_command('mp_restartgame 1\n')
     for player in wcgo.player.PlayerIter():
         _init_player(player)
 
@@ -72,11 +72,20 @@ def _on_player_activate(event):
     _init_player(player)
 
 
-@Event('player_disconnect', 'player_spawn')
-def _save_player_data(event):
-    """Save the player's data when he disconnects or spawns."""
+@Event('player_disconnect')
+def _on_player_disconnect(event):
+    """Save the player's data when he disconnects."""
     player = wcgo.player.Player.from_userid(event['userid'])
     database.save_player(player)
+    wcgo.player.Player._registered.remove(player.userid)
+
+
+@Event('player_spawn')
+def _on_player_spawn(event):
+    """Save the player's data when he spawns."""
+    if event['teamnum'] in (2, 3):
+        player = wcgo.player.Player.from_userid(event['userid'])
+        database.save_player(player)
 
 
 # Say command and client command decorations

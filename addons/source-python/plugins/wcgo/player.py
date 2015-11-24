@@ -4,9 +4,7 @@
 from entities.helpers import index_from_edict
 from filters.iterator import _IterObject
 from players import PlayerGenerator
-
-# EasyPlayer
-from easyplayer import EasyPlayer
+import players.entity
 
 
 class PlayerIter(_IterObject):
@@ -19,15 +17,19 @@ class PlayerIter(_IterObject):
             yield Player(index_from_edict(edict))
 
 
-class Player(EasyPlayer):
+class Player(players.entity.Player):
     """Player class with WCGO functionality."""
+
+    _registered = set()
 
     def __init__(self, index):
         """Initialize a new player."""
         super().__init__(index)
-        self.gold = 0
-        self._hero = None
-        self.heroes = {}
+        if self.userid not in Player._registered:
+            self.gold = 0
+            self._hero = None
+            self.heroes = {}
+            Player._registered.add(self.userid)
 
     @property
     def hero(self):
