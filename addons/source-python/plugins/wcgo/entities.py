@@ -92,8 +92,8 @@ class Hero(_LevelableEntity, metaclass=_HeroMeta):
         """Initialize a new hero."""
         super().__init__(owner, level)
         self._xp = xp
-        self.passives = [cls() for cls in self._passive_classes]
-        self.skills = [cls() for cls in self._skill_classes]
+        self.passives = [cls(owner=self) for cls in self._passive_classes]
+        self.skills = [cls(owner=self) for cls in self._skill_classes]
         self.items = []
 
     @_LevelableEntity.level.setter

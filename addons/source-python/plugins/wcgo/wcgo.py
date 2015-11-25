@@ -65,7 +65,7 @@ def _init_player(player):
     hero_classes = wcgo.entities.Hero.get_classes()
     for clsid in cfg.starting_heroes:
         if clsid in hero_classes and clsid not in player.heroes:
-            player.heroes[clsid] = hero_classes[clsid]()
+            player.heroes[clsid] = hero_classes[clsid](owner=player)
     if player.hero is None:
         random_clsid = random.choice(cfg.starting_heroes)
         player.hero = player.heroes[random_clsid]
