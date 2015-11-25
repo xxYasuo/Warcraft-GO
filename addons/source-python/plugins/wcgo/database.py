@@ -43,30 +43,30 @@ class Database:
 
     def save_player(self, player):
         """Save player's data into the database."""
-        if player.is_fake_client():
+        if player.steamid == 'BOT':
             steamid = 'BOT_' + player.name
         else:
             steamid = player.steamid
         self.connection.execute(
-            "INSERT OR REPLACE INTO players VALUES (?, ?, ?)",
+            'INSERT OR REPLACE INTO players VALUES (?, ?, ?)',
             (steamid, player.gold, player.hero.clsid))
         self.save_hero(steamid, player.hero)
 
     def save_hero(self, steamid, hero):
         """Save hero's data into the database."""
         self.connection.execute(
-            "INSERT OR REPLACE INTO heroes VALUES (?, ?, ?, ?)",
+            'INSERT OR REPLACE INTO heroes VALUES (?, ?, ?, ?)',
             (steamid, hero.clsid, hero.level, hero.xp))
         for skill in hero.skills:
             self.connection.execute(
-                "INSERT OR REPLACE INTO skills VALUES (?, ?, ?, ?)",
+                'INSERT OR REPLACE INTO skills VALUES (?, ?, ?, ?)',
                 (steamid, hero.clsid, skill.clsid, skill.level))
         self.connection.commit()
 
     def load_player(self, player):
         """Load player's data from the database."""
         hero_classes = wcgo.entities.Hero.get_classes()
-        if player.is_fake_client():
+        if player.steamid == 'BOT':
             steamid = 'BOT_' + player.name
         else:
             steamid = player.steamid
@@ -86,38 +86,30 @@ class Database:
         cursor = self.connection.cursor()
         for skill in hero.skills:
             cursor.execute(
-                "SELECT level FROM skills WHERE steamid=? AND hero_clsid=? AND clsid=?",
+                'SELECT level FROM skills WHERE steamid=? AND hero_clsid=? AND clsid=?',
                 (steamid, hero.clsid, skill.clsid))
             data = cursor.fetchone()
             if data:
                 skill.level = data[0]
+        cursor.close()
 
     def _get_player_data(self, steamid):
         """Get player's data from the database."""
-        cursor = self.connection.cursor()
-        cursor.execute(
-            "SELECT gold, hero_clsid FROM players WHERE steamid=?",
-            (steamid,))
-        data = cursor.fetchone()
+        data = next(self.connection.execute(
+            'SELECT gold, hero_clsid FROM players WHERE steamid=?', (steamid,)))
         if data is None:
             return (0, None)
         return data
 
     def _get_heroes_data(self, steamid):
         """Get a list of heroes' data for a given steamid."""
-        cursor = self.connection.cursor()
-        cursor.execute(
-            "SELECT clsid, level, xp FROM heroes WHERE steamid=?",
-            (steamid,))
-        return cursor.fetchall()
+        return self.connection.execute(
+            "SELECT clsid, level, xp FROM heroes WHERE steamid=?", (steamid,))
 
     def _get_hero_data(self, steamid, clsid):
         """Get hero's data from the database."""
-        cursor = self.connection.cursor()
-        cursor.execute(
-            "SELECT level, xp FROM heroes WHERE steamid=? AND clsid=?",
-            (steamid, clsid))
-        data = cursor.fetchone()
+        data = next(self.connection.execute(
+            "SELECT level, xp FROM heroes WHERE steamid=? AND clsid=?", (steamid, clsid)))
         if data is None:
             return (0, 0)
         return data
