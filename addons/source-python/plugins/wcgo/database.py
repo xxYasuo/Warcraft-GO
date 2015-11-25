@@ -13,7 +13,7 @@ class Database:
     def __init__(self, path=':memory:'):
         """Initialize a new database connection."""
         self._path = path
-        self._connection = sqlite3.connect(path)
+        self.connection = sqlite3.connect(path)
         self.connection.execute('''CREATE TABLE IF NOT EXISTS players (
             steamid TEXT PRIMARY KEY,
             gold INTEGER,
@@ -34,16 +34,12 @@ class Database:
             PRIMARY KEY (steamid, hero_clsid, clsid)
         )''')
 
-    @property
-    def connection(self):
-        return self._connection
-
     def close(self, commit=True):
         """Close the database connection."""
         if commit is True:
             self.connection.commit()
         self.connection.close()
-        self._connection = None
+        self.connection = None
 
     def save_player(self, player):
         """Save player's data into the database."""
