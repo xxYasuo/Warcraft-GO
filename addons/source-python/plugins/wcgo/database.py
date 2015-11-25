@@ -48,7 +48,7 @@ class Database:
     def save_player(self, player):
         """Save player's data into the database."""
         if player.is_fake_client():
-            steamid = '{0}_{1}'.format(player.steamid, player.name)
+            steamid = 'BOT_' + player.name
         else:
             steamid = player.steamid
         self.connection.execute(
@@ -70,12 +70,16 @@ class Database:
     def load_player(self, player):
         """Load player's data from the database."""
         hero_classes = wcgo.entities.Hero.get_classes()
-        player.gold, active_hero_clsid = self._get_player_data(player.steamid)
-        for clsid, level, xp in self._get_heroes_data(player.steamid):
+        if player.is_fake_client():
+            steamid = 'BOT_' + player.name
+        else:
+            steamid = player.steamid
+        player.gold, active_hero_clsid = self._get_player_data(steamid)
+        for clsid, level, xp in self._get_heroes_data(steamid):
             if clsid not in hero_classes:
                 continue
             hero = hero_classes[clsid](player, level, xp)
-            self.load_hero(player.steamid, hero)
+            self.load_hero(steamid, hero)
             player.heroes[clsid] = hero
             if clsid == active_hero_clsid:
                 player.hero = hero
