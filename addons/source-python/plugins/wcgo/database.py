@@ -13,7 +13,7 @@ class Database:
     def __init__(self, path=':memory:'):
         """Initialize a new database connection."""
         self._path = path
-        self.connection = sqlite3.connect(path)
+        self._connection = sqlite3.connect(path)
         self.connection.execute('''CREATE TABLE IF NOT EXISTS players (
             steamid TEXT PRIMARY KEY,
             gold INTEGER,
@@ -34,19 +34,27 @@ class Database:
             PRIMARY KEY (steamid, hero_clsid, clsid)
         )''')
 
+    @property
+    def connection(self):
+        return self._connection
+
     def close(self, commit=True):
         """Close the database connection."""
         if commit is True:
             self.connection.commit()
         self.connection.close()
-        self.connection = None
+        self._connection = None
 
     def save_player(self, player):
         """Save player's data into the database."""
+        if player.is_fake_client():
+            steamid = '{0}_{1}'.format(player.steamid, player.name)
+        else:
+            steamid = player.steamid
         self.connection.execute(
             "INSERT OR REPLACE INTO players VALUES (?, ?, ?)",
-            (player.steamid, player.gold, player.hero.clsid))
-        self.save_hero(player.steamid, player.hero)
+            (steamid, player.gold, player.hero.clsid))
+        self.save_hero(steamid, player.hero)
 
     def save_hero(self, steamid, hero):
         """Save hero's data into the database."""
@@ -66,7 +74,7 @@ class Database:
         for clsid, level, xp in self._get_heroes_data(player.steamid):
             if clsid not in hero_classes:
                 continue
-            hero = hero_classes[clsid](level, xp)
+            hero = hero_classes[clsid](player, level, xp)
             self.load_hero(player.steamid, hero)
             player.heroes[clsid] = hero
             if clsid == active_hero_clsid:
