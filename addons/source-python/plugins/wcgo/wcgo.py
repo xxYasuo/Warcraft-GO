@@ -122,15 +122,16 @@ def _execute_player_skills(event):
     player.hero.execute_skills(event.get_name(), player=player, **eargs)
 
 
-def _execute_attacker_victim_skills(event, attacker_ename, victim_ename):
+def _execute_attack_skills(event, attacker_ename, victim_ename, suicide_ename):
     """Execute attacker's and victim's skills."""
     victim = player_from_event(event, 'userid')
-    if event['userid'] == event['attacker'] or not event['attacker']:
-        return
     attacker = player_from_event(event, 'attacker')
     eargs = event.variables.as_dict()
     del eargs['userid']
     eargs.update(attacker=attacker, victim=victim)
+    if attacker is None or attacker.userid == victim.userid:
+        victim.hero.execute_skills(suicide_ename, player=victim, **eargs)
+        return
     if not (attacker.steamid == 'BOT' and attacker.hero is None):
         attacker.hero.execute_skills(attacker_ename, player=attacker, **eargs)
     if not (victim.steamid == 'BOT' and victim.hero is None):
@@ -150,7 +151,7 @@ def _on_player_jump(event):
 
 @Event('player_death')
 def _on_player_death(event):
-    _execute_attacker_victim_skills(event, 'player_kill', 'player_death')
+    _execute_attack_skills(event, 'player_kill', 'player_death', 'player_suicide')
     victim = player_from_event(event, 'userid')
     victim.hero.items = [item for item in victim.hero.items
                          if item.stay_after_death]
@@ -158,25 +159,25 @@ def _on_player_death(event):
 
 @Event('player_hurt')
 def _on_player_hurt(event):
-    _execute_attacker_victim_skills(event, 'player_attack', 'player_victim')
+    _execute_attack_skills(event, 'player_attack', 'player_victim', 'player_self_injury')
 
 
 # Take damage system hooks
 
 @EntityPreHook(EntityCondition.is_player, 'on_take_damage')
 def _pre_on_take_damage(args):
-    victim_index = index_from_pointer(args[0])
-    victim = wcgo.player.Player(victim_index)
     info = make_object(TakeDamageInfo, args[1])
-    if info.attacker == victim_index or not info.attacker:
-        return
-    attacker = wcgo.player.Player(info.attacker)
+    attacker = wcgo.player.Player(info.attacker) if info.attacker else None
+    victim = wcgo.player.Player(index_from_pointer(args[0]))
     eargs = {
         'attacker': attacker,
         'victim': victim,
         'info': info,
         'weapon': attacker.active_weapon.class_name,
     }
+    if attacker is None or attacker.userid == victim.userid:
+        victim.hero.execute_skills('player_pre_self_injury', player=victim, **eargs)
+        return
     if not (attacker.steamid == 'BOT' and attacker.hero is None):
         attacker.hero.execute_skills('player_pre_attack', player=attacker, **eargs)
     if not (victim.steamid == 'BOT' and victim.hero is None):
