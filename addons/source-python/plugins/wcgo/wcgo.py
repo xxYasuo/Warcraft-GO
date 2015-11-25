@@ -91,6 +91,8 @@ def _on_player_spawn(event):
     """Save the player's data when he spawns."""
     if event['teamnum'] in (2, 3):
         player = wcgo.player.Player.from_userid(event['userid'])
+        if player.steamid == 'BOT':
+            return  # No need to save bots all the time
         database.save_player(player)
 
 
@@ -106,6 +108,8 @@ def _main_say_command(command, index, team):
 def _execute_player_skills(event):
     """Execute skills for one player."""
     player = wcgo.player.Player.from_userid(event['userid'])
+    if player.steamid == 'BOT' and player.hero is None:
+        return  # Bots sometimes spawn before their data is loaded
     eargs = event.variables.as_dict()
     del eargs['userid']
     eargs['player'] = player
@@ -115,12 +119,15 @@ def _execute_player_skills(event):
 def _execute_attacker_victim_skills(event, attacker_ename, victim_ename):
     """Execute attacker's and victim's skills."""
     victim = wcgo.player.Player.from_userid(event['userid'])
-    if event['userid'] != event['attacker'] and event['attacker']:
-        attacker = wcgo.player.Player.from_userid(event['attacker'])
-        eargs = event.variables.as_dict()
-        del eargs['userid']
-        eargs.update(attacker=attacker, victim=victim)
+    if event['userid'] == event['attacker'] or not event['attacker']:
+        return
+    attacker = wcgo.player.Player.from_userid(event['attacker'])
+    eargs = event.variables.as_dict()
+    del eargs['userid']
+    eargs.update(attacker=attacker, victim=victim)
+    if not (attacker.steamid == 'BOT' and attacker.hero is None):
         attacker.hero.execute_skills(attacker_ename, player=attacker, **eargs)
+    if not (victim.steamid == 'BOT' and victim.hero is None):
         victim.hero.execute_skills(victim_ename, player=victim, **eargs)
 
 
@@ -155,16 +162,19 @@ def _pre_on_take_damage(args):
     victim_index = index_from_pointer(args[0])
     victim = wcgo.player.Player(victim_index)
     info = make_object(TakeDamageInfo, args[1])
-    if info.attacker and info.attacker != victim_index:
-        attacker = wcgo.player.Player(info.attacker)
-        eargs = {
-            'attacker': attacker,
-            'victim': victim,
-            'info': info,
-            'weapon': attacker.active_weapon.class_name,
-        }
-        victim.hero.execute_skills('player_pre_victim', player=victim, **eargs)
+    if info.attacker == victim_index or not info.attacker:
+        return
+    attacker = wcgo.player.Player(info.attacker)
+    eargs = {
+        'attacker': attacker,
+        'victim': victim,
+        'info': info,
+        'weapon': attacker.active_weapon.class_name,
+    } 
+    if not (attacker.steamid == 'BOT' and attacker.hero is None):
         attacker.hero.execute_skills('player_pre_attack', player=attacker, **eargs)
+    if not (victim.steamid == 'BOT' and victim.hero is None):
+        victim.hero.execute_skills('player_pre_victim', player=victim, **eargs)
 
 
 # Restriction system hooks
