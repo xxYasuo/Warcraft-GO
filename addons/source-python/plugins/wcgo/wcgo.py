@@ -83,7 +83,7 @@ def _on_player_disconnect(event):
     """Save the player's data when he disconnects."""
     player = wcgo.player.Player.from_userid(event['userid'])
     database.save_player(player)
-    wcgo.player.Player._registered.remove(player.userid)
+    del wcgo.player.Player._data[player.userid]
 
 
 @Event('player_spawn')
@@ -101,7 +101,7 @@ def _main_say_command(command, index, team):
     wcgo.menus.MENUS['main'].send(index)
 
 
-# Skill executions, XP gain, and gold gain from now on
+# Skill executions, XP gain, and gold gain
 
 def _execute_player_skills(event):
     """Execute skills for one player."""
@@ -147,24 +147,24 @@ def _on_player_death(event):
 def _on_player_hurt(event):
     _execute_attacker_victim_skills(event, 'player_attack', 'player_victim')
 
+
 # Take damage system hooks
 
 @EntityPreHook(EntityCondition.is_player, 'on_take_damage')
 def _pre_on_take_damage(args):
     victim_index = index_from_pointer(args[0])
     victim = wcgo.player.Player(victim_index)
-    attacker = wcgo.player.Player(info.attacker) if info.attacker else None
     info = make_object(TakeDamageInfo, args[1])
-    if info.attacker != victim_index:
+    if info.attacker and info.attacker != victim_index:
+        attacker = wcgo.player.Player(info.attacker)
         eargs = {
             'attacker': attacker,
             'victim': victim,
             'info': info,
-            'weapon': attacker.active_weapon.class_name if attacker else None,
+            'weapon': attacker.active_weapon.class_name,
         }
         victim.hero.execute_skills('player_pre_victim', player=victim, **eargs)
-        if attacker:
-            attacker.hero.execute_skills('player_pre_attack', player=attacker, **eargs)
+        attacker.hero.execute_skills('player_pre_attack', player=attacker, **eargs)
 
 
 # Restriction system hooks
