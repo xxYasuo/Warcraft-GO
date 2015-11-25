@@ -79,14 +79,14 @@ def _init_player(player):
 
 
 @Event('player_activate')
-def _on_player_activate(event):
+def _init_player_on_activate(event):
     """Initialize the player the when he gets activated."""
     player = player_from_event(event, 'userid')
     _init_player(player)
 
 
 @Event('player_disconnect')
-def _on_player_disconnect(event):
+def _save_data_on_disconnect(event):
     """Save the player's data when he disconnects."""
     player = player_from_event(event, 'userid')
     database.save_player(player)
@@ -94,7 +94,7 @@ def _on_player_disconnect(event):
 
 
 @Event('player_spawn')
-def _on_player_spawn(event):
+def _save_data_on_spawn(event):
     """Save the player's data when he spawns."""
     if event['teamnum'] in (2, 3):
         player = player_from_event(event, 'userid')
