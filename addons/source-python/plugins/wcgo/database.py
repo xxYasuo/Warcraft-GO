@@ -91,12 +91,12 @@ class Database:
             data = cursor.fetchone()
             if data:
                 skill.level = data[0]
-        cursor.close()
 
     def _get_player_data(self, steamid):
         """Get player's data from the database."""
-        data = next(self.connection.execute(
-            'SELECT gold, hero_clsid FROM players WHERE steamid=?', (steamid,)))
+        cursor = self.connection.execute(
+            'SELECT gold, hero_clsid FROM players WHERE steamid=?', (steamid,))
+        data = cursor.fetchone()
         if data is None:
             return (0, None)
         return data
@@ -108,8 +108,9 @@ class Database:
 
     def _get_hero_data(self, steamid, clsid):
         """Get hero's data from the database."""
-        data = next(self.connection.execute(
-            "SELECT level, xp FROM heroes WHERE steamid=? AND clsid=?", (steamid, clsid)))
+        cursor = self.connection.execute(
+            "SELECT level, xp FROM heroes WHERE steamid=? AND clsid=?", (steamid, clsid))
+        data = cursor.fetchone()
         if data is None:
             return (0, 0)
         return data
