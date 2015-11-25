@@ -28,6 +28,13 @@ import wcgo.utilities
 database = None
 
 
+def player_from_event(event, key):
+    """Fetch player from an event's key."""
+    if event[key]:
+        return wcgo.player.Player.from_userid(event[key])
+    return None
+
+
 def load():
     """Setup the plugin."""
     # Make sure there are proper heroes on the server
@@ -74,14 +81,14 @@ def _init_player(player):
 @Event('player_activate')
 def _on_player_activate(event):
     """Initialize the player the when he gets activated."""
-    player = wcgo.player.Player.from_userid(event['userid'])
+    player = player_from_event(event, 'userid')
     _init_player(player)
 
 
 @Event('player_disconnect')
 def _on_player_disconnect(event):
     """Save the player's data when he disconnects."""
-    player = wcgo.player.Player.from_userid(event['userid'])
+    player = player_from_event(event, 'userid')
     database.save_player(player)
     del wcgo.player.Player._data[player.userid]
 
@@ -90,7 +97,7 @@ def _on_player_disconnect(event):
 def _on_player_spawn(event):
     """Save the player's data when he spawns."""
     if event['teamnum'] in (2, 3):
-        player = wcgo.player.Player.from_userid(event['userid'])
+        player = player_from_event(event, 'userid')
         if player.steamid == 'BOT':
             return  # No need to save bots all the time
         database.save_player(player)
@@ -107,21 +114,20 @@ def _main_say_command(command, index, team):
 
 def _execute_player_skills(event):
     """Execute skills for one player."""
-    player = wcgo.player.Player.from_userid(event['userid'])
+    player = player_from_event(event, 'userid')
     if player.steamid == 'BOT' and player.hero is None:
         return  # Bots sometimes spawn before their data is loaded
     eargs = event.variables.as_dict()
     del eargs['userid']
-    eargs['player'] = player
-    player.hero.execute_skills(event.get_name(), **eargs)
+    player.hero.execute_skills(event.get_name(), player=player, **eargs)
 
 
 def _execute_attacker_victim_skills(event, attacker_ename, victim_ename):
     """Execute attacker's and victim's skills."""
-    victim = wcgo.player.Player.from_userid(event['userid'])
+    victim = player_from_event(event, 'userid')
     if event['userid'] == event['attacker'] or not event['attacker']:
         return
-    attacker = wcgo.player.Player.from_userid(event['attacker'])
+    attacker = player_from_event(event, 'attacker')
     eargs = event.variables.as_dict()
     del eargs['userid']
     eargs.update(attacker=attacker, victim=victim)
@@ -145,7 +151,7 @@ def _on_player_jump(event):
 @Event('player_death')
 def _on_player_death(event):
     _execute_attacker_victim_skills(event, 'player_kill', 'player_death')
-    victim = wcgo.player.Player.from_userid(event['userid'])
+    victim = player_from_event(event, 'userid')
     victim.hero.items = [item for item in victim.hero.items
                          if item.stay_after_death]
 
@@ -170,7 +176,7 @@ def _pre_on_take_damage(args):
         'victim': victim,
         'info': info,
         'weapon': attacker.active_weapon.class_name,
-    } 
+    }
     if not (attacker.steamid == 'BOT' and attacker.hero is None):
         attacker.hero.execute_skills('player_pre_attack', player=attacker, **eargs)
     if not (victim.steamid == 'BOT' and victim.hero is None):
@@ -197,6 +203,6 @@ def _on_buy_internal(args):
 
 @Event('player_death')
 def _clear_restrictions_and_gravity(event):
-    player = wcgo.player.Player.from_userid(event['userid'])
+    player = player_from_event(event, 'userid')
     player.restrictions.clear()
     player.gravity = 1.0
