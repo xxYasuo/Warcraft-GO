@@ -4,6 +4,7 @@
 import random
 
 # Source.Python
+import messages
 from commands.say import SayCommand
 from engines.server import engine_server
 from entities import TakeDamageInfo
@@ -21,6 +22,7 @@ import wcgo.entities
 import wcgo.heroes
 import wcgo.menus
 import wcgo.player
+import wcgo.strings
 import wcgo.utilities
 
 
@@ -109,8 +111,8 @@ def _save_data_on_spawn(event):
 
 def _on_hero_level_up(hero, player, levels):
     """Alarm the player and play a sound when a hero level's up."""
-    from messages import SayText2
-    SayText2('You reached level {0}'.format(hero.level)).send(player.index)
+    messages.SayText2(
+        wcgo.strings.level_up.format(level=hero.level)).send(player.index)
     wcgo.menus.MENUS['current_hero'].send(player.index)
 
 
