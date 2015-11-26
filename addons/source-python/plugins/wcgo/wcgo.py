@@ -4,6 +4,7 @@
 import random
 
 # Source.Python
+import messages
 from commands.say import SayCommand
 from engines.server import engine_server
 from entities import TakeDamageInfo
@@ -21,6 +22,7 @@ import wcgo.entities
 import wcgo.heroes
 import wcgo.menus
 import wcgo.player
+import wcgo.strings
 import wcgo.utilities
 
 
@@ -54,9 +56,12 @@ def load():
     # Initialize the database and restart the game
     global database
     database = wcgo.database.Database(cfg.database_path)
-    engine_server.server_command('mp_restartgame 1\n')
     for player in wcgo.player.PlayerIter():
         _init_player(player)
+
+    # Listen to Hero.e_level_up event and restart the game
+    wcgo.entities.Hero.e_level_up += _on_hero_level_up
+    engine_server.server_command('mp_restartgame 1\n')
 
 
 def unload():
@@ -64,6 +69,7 @@ def unload():
     for player in wcgo.player.PlayerIter():
         database.save_player(player)
     database.close()
+    wcgo.entities.Hero.e_level_up -= _on_hero_level_up
 
 
 def _init_player(player):
@@ -101,6 +107,13 @@ def _save_data_on_spawn(event):
         if player.steamid == 'BOT':
             return  # No need to save bots all the time
         database.save_player(player)
+
+
+def _on_hero_level_up(hero, player, levels):
+    """Alarm the player and play a sound when a hero level's up."""
+    messages.SayText2(
+        wcgo.strings.level_up.format(level=hero.level)).send(player.index)
+    wcgo.menus.MENUS['current_hero'].send(player.index)
 
 
 # Say command and client command decorations
@@ -145,6 +158,7 @@ def _on_player_death(event):
         return
     if not (attacker.steamid == 'BOT' and attacker.hero is None):
         attacker.hero.execute_skills('player_kill', player=attacker, **eargs)
+        attacker.hero.xp += cfg.exp_values['Kill']
     if not (victim.steamid == 'BOT' and victim.hero is None):
         victim.hero.execute_skills('player_death', player=victim, **eargs)
         victim.hero.items = [item for item in victim.hero.items
