@@ -75,14 +75,13 @@ class Database:
             if clsid not in hero_classes:
                 continue
             hero = hero_classes[clsid](player, level, xp)
-            self.load_hero(steamid, hero)
+            self._load_skills(steamid, hero)
             player.heroes[clsid] = hero
             if clsid == active_hero_clsid:
                 player.hero = hero
 
-    def load_hero(self, steamid, hero):
+    def _load_skills(self, steamid, hero):
         """Load hero's data from the database."""
-        hero.xp, hero.level = self._get_hero_data(steamid, hero.clsid)
         cursor = self.connection.cursor()
         for skill in hero.skills:
             cursor.execute(
@@ -105,12 +104,3 @@ class Database:
         """Get a list of heroes' data for a given steamid."""
         return self.connection.execute(
             "SELECT clsid, level, xp FROM heroes WHERE steamid=?", (steamid,))
-
-    def _get_hero_data(self, steamid, clsid):
-        """Get hero's data from the database."""
-        cursor = self.connection.execute(
-            "SELECT level, xp FROM heroes WHERE steamid=? AND clsid=?", (steamid, clsid))
-        data = cursor.fetchone()
-        if data is None:
-            return (0, 0)
-        return data
