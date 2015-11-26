@@ -2,6 +2,7 @@
 
 # Warcraft: GO
 import wcgo.configs as cfg
+import wcgo.event
 from wcgo.utilities import ClassProperty
 
 
@@ -82,6 +83,7 @@ class Hero(_LevelableEntity, metaclass=_HeroMeta):
     restricted_items = tuple()
     category = cfg.default_hero_category
     _register = False
+    e_level_up = wcgo.event.Event()
 
     @staticmethod
     def get_classes():
@@ -131,9 +133,13 @@ class Hero(_LevelableEntity, metaclass=_HeroMeta):
             raise ValueError(
                 "Negative value passed to give_xp, use take_xp instead")
         self._xp += value
+        level = self.level
         while not self.is_max_level() and self._xp >= self.required_xp:
             self._xp -= self.required_xp
             self._level += 1
+        if self.level > level:
+            self.e_level_up.fire(
+                self, levels=self.level - level, player=self.owner)
 
     @property
     def required_xp(self):
