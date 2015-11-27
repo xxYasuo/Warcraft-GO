@@ -120,7 +120,7 @@ def _on_hero_level_up(hero, player, levels):
 
 @SayCommand('wcgo')
 def _main_say_command(command, index, team):
-    wcgo.menus.MENUS['main'].send(index)
+    wcgo.menus.main_menu.send(index)
 
 
 # Skill executions, XP gain, and gold gain

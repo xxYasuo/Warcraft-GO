@@ -12,8 +12,7 @@ from wcgo.player import Player
 
 def _main_menu_build(menu, index):
     player = Player(index)
-    menu[1].text.format(gold=player.gold)
-
+    menu[1].text = menu[1].text.format(gold=player.gold)
 
 def _main_menu_select(menu, index, choice):
     next_menu = choice.value

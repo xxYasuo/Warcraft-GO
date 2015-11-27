@@ -7,21 +7,30 @@ CLOSE = 'Close'
 
 MAIN_MENU = {
     'Title': 'Warcraft (Main Menu)',
-    'Gold': '- {gold} Gold',
+    'Gold': '{gold} Gold',
     'Current Hero': 'Current Hero',
     'Owned Heroes': 'Owned Heroes',
     'Buy Heroes': 'Buy Heroes',
 }
 
 CURRENT_HERO_MENU = {
-    'Title': '{hero} ({levelinfo})',
+    'Title': 'Warcraft (Current Hero)',
+    'Description': '{hero} ({levelinfo})',
     'Skill': '{skill} ({levelinfo})',
     'Reset': 'Reset Skills ({gold} Gold)',
 }
 
-OWNED_HEROES_MENU = {
-    'Title': 'Warcraft (Owned Heroes)',
+CATEGORIES_HEROES_MENU = {
+    'Title': 'Warcraft ({category})',
+}
+
+CATEGORIES_MENU = {
+    'Title': 'Warcraft (Categories)',
+}
+
+OWNED_HERO_MENU = {
+    'Title': 'Warcraft ({hero})',
+    'Description': '- {description}',
     'Change': 'Change',
-    'Hero': '{hero} ({levelinfo})',
     'Skill': '{skill} ({levelinfo})\n{description}',
 }

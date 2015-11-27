@@ -25,17 +25,14 @@ def _owned_hero_menu_build(menu, index):
     hero = menu.hero
 
     # Construct menu ready for addition of items
-    menu.title = strings.OWNED_HEROES_MENU['Hero'].format(
-        hero=hero.name, levelinfo=_level_info(hero))
-    menu.description = hero.description
+    menu.title = strings.OWNED_HERO_MENU['Title'].format(
+        hero=hero.name)
+    menu.description = strings.OWNED_HERO_MENU['Description'].format(
+        description=hero.description)
+    menu.constants = {6: menus.PagedOption(strings.OWNED_HERO_MENU['Change'], hero)}
     menu.clear()
 
-    for num, skill in enumerate(hero.skills, start=1):
-        # Check whether reset should be added
-        if num % 6 == 0:
-            option = menus.PagedOption(strings.OWNED_HEROES_MENU['Change'], 1)
-            menu.append(option)
-
+    for skill in hero.skills:
         # Append the skill in iteration to the menu
         option = menus.PagedOption(
             strings.OWNED_HEROES_MENU['Skill'].format(
@@ -43,10 +40,12 @@ def _owned_hero_menu_build(menu, index):
             None)
         menu.append(option)
 
+    menu.append(' \n')
+
 
 def _owned_hero_menu_select(menu, index, choice):
     player = Player(index)
-    if choice.value is 1:
+    if choice.value:
         player.hero = choice.value
     else:
         return menu
@@ -67,6 +66,7 @@ def _owned_heroes_menu_build(menu, index):
 
 def _owned_heroes_menu_select(menu, index, choice):
     owned_hero_menu.hero = choice.value
+    owned_hero_menu.previous_menu = menu
     return owned_hero_menu
 
 owned_heroes_menu = PagedMenu(
@@ -81,7 +81,7 @@ def _owned_categories_menu_build(menu, index):
 
     # Retrieve all heroes available for player
     categories = collections.defaultdict(list)
-    for hero in player.heroes:
+    for hero in player.heroes.values():
         categories[hero.category].append(hero)
 
     menu.clear()
@@ -93,11 +93,15 @@ def _owned_categories_menu_build(menu, index):
 
 
 def _owned_categories_menu_select(menu, index, choice):
-    owned_heroes_menu.title, owned_heroes_menu.heroes = choice.value
+    category, heroes = choice.value
+    owned_heroes_menu.heroes = heroes
+    owned_heroes_menu.title = strings.CATEGORIES_HEROES_MENU['Title'].format(
+        category=category)
+    owned_heroes_menu.previous_menu = menu
     return owned_heroes_menu
 
 owned_categories_menu = PagedMenu(
-    title=strings.OWNED_HEROES_MENU['Title'],
+    title=strings.CATEGORIES_MENU['Title'],
     build_callback=_owned_categories_menu_build,
     select_callback=_owned_categories_menu_select)
 
@@ -109,25 +113,25 @@ def _current_hero_menu_build(menu, index):
     hero = player.hero
 
     # Construct menu ready for addition of items
-    menu.title = strings.CURRENT_HERO_MENU['Title'].format(
+    menu.title = strings.CURRENT_HERO_MENU['Title']
+    menu.description = strings.CURRENT_HERO_MENU['Description'].format(
         hero=hero.name, levelinfo=_level_info(hero))
-    menu.description = hero.description
+    menu.constants = {6: menus.PagedOption(
+                strings.CURRENT_HERO_MENU['Reset'].format(gold=cfg.reset_skills_cost),
+                None)}
     menu.clear()
 
-    for num, skill in enumerate(hero.skills, start=1):
-        # Check whether reset should be added
-        if num % 6 == 0:
-            option = menus.PagedOption(
-                strings.CURRENT_HERO_MENU['Reset'].format(gold=cfg.reset_skills_cost),
-                None)
-            menu.append(option)
-
+    for skill in hero.skills:
         # Append the skill in iteration to the menu
         option = menus.PagedOption(
             strings.CURRENT_HERO_MENU['Skill'].format(skill=skill.name, levelinfo=_level_info(skill)),
             skill)
         menu.append(option)
 
+    lines_to_fill = 6 - len(hero.skills)
+    while lines_to_fill > 1:
+        menu.append(' \n')
+        lines_to_fill -= 1
 
 def _current_hero_menu_select(menu, index, choice):
     player = Player(index)
