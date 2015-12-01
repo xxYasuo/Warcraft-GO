@@ -86,9 +86,11 @@ class Hero(_LevelableEntity, metaclass=_HeroMeta):
     e_level_up = wcgo.event.Event()
 
     @staticmethod
-    def get_classes():
-        """Get a dict of all the registered hero classes."""
-        return _HeroMeta._classes
+    def get_classes(filters=None):
+        """Get a filtered dict of the registered item classes."""
+        if not filters:
+            return _HeroMenu._classes
+        return {k: v for k, v in _HeroMeta._classes.items() if filters(v)}
 
     def __init__(self, owner=None, level=0, xp=0):
         """Initialize a new hero."""
@@ -189,12 +191,31 @@ class Skill(_LevelableEntity):
             method(**eargs)
 
 
-class Item(_Entity):
+class _ItemMeta(type):
+    """Metaclass for storing all the item classes into a dict."""
+
+    _classes = {}
+
+    def __init__(cls, *args, **kwargs):
+        """Initialize a item class and add it to the classes dict."""
+        super().__init__(*args, **kwargs)
+        if cls.__dict__.get('_register', True):
+            _ItemMeta._classes[cls.clsid] = cls
+
+class Item(_Entity, metaclass=_ItemMeta):
     """Item is a temporary skill that can be bought for a hero."""
 
     stay_after_death = False
     limit = 1
     category = cfg.default_item_category
+    _register = False
+
+    @staticmethod
+    def get_classes(filters=None):
+        """Get a filtered dict of the registered item classes."""
+        if not filters:
+            return _ItemMeta._classes
+        return {k: v for k, v in _ItemMeta._classes.items() if filters(v)}
 
     def execute_method(self, name, **eargs):
         """Executes the items's method with matching name."""
