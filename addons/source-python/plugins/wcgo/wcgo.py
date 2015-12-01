@@ -117,7 +117,6 @@ def _on_hero_level_up(hero, player, levels):
     """Alarm the player and play a sound when a hero level's up."""
     messages.SayText2(
         wcgo.strings.level_up.format(level=hero.level)).send(player.index)
-    wcgo.menus.MENUS['current_hero'].send(player.index)
 
 
 # Say command and client command decorations
