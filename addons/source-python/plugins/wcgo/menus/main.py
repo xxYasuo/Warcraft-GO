@@ -1,4 +1,4 @@
-﻿"""Provides the main_menu instance."""
+﻿"""Provides the main menu instance."""
 
 # Source.Python
 import menus
@@ -7,8 +7,13 @@ import menus
 from wcgo.menus import strings
 from wcgo.menus.heroes import current_hero_menu
 from wcgo.menus.heroes import owned_categories_menu
+from wcgo.menus.heroes import buy_categories_menu
+from wcgo.menus.items import item_categories_menu
+from wcgo.menus.items import item_sell_menu
+from wcgo.menus.players import player_list_menu
 from wcgo.player import Player
 
+# Main menu instance
 
 def _main_menu_build(menu, index):
     player = Player(index)
@@ -27,7 +32,13 @@ main_menu = menus.SimpleMenu(
         menus.Text(strings.SEPARATOR),
         menus.SimpleOption(1, strings.MAIN_MENU['Current Hero'], current_hero_menu),
         menus.SimpleOption(2, strings.MAIN_MENU['Owned Heroes'], owned_categories_menu),
+        menus.SimpleOption(3, strings.MAIN_MENU['Buy Heroes'], buy_categories_menu),
         menus.Text(strings.SEPARATOR),
-        menus.SimpleOption(9, strings.CLOSE, None)
+        menus.SimpleOption(4, strings.MAIN_MENU['Buy Items'], item_categories_menu),
+        menus.SimpleOption(5, strings.MAIN_MENU['Sell Items'], item_sell_menu),
+        menus.Text(strings.SEPARATOR),
+        menus.SimpleOption(6, strings.MAIN_MENU['Player Info'], player_list_menu),
+        menus.Text(strings.SEPARATOR),
+        menus.SimpleOption(9, strings.CLOSE, None, highlight=False)
     ],
     build_callback=_main_menu_build, select_callback=_main_menu_select)
