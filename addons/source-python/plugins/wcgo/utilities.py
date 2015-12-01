@@ -44,3 +44,10 @@ def import_modules(package):
             full_name = package.__name__ + '.' + module_name
             modules[full_name] = importlib.import_module(full_name)
     return modules
+
+
+def get_subclasses(cls):
+    """Recursively get a flat list of all the subclasses of a class."""
+    for subcls in cls.__subclasses__():
+        yield subcls
+        yield from get_subclasses(subcls)
