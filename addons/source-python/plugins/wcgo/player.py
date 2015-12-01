@@ -60,6 +60,7 @@ class Player(players.entity.Player):
                 self.hero.items.clear()
             self.restrictions.clear()
             Player._data[self.userid]['hero'] = value
+            self.client_command('kill', True)
 
     @property
     def heroes(self):
