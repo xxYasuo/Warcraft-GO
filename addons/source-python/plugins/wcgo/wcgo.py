@@ -5,7 +5,9 @@ import random
 
 # Source.Python
 import messages
+from commands import CommandReturn
 from commands.say import SayCommand
+from commands.client import ClientCommand
 from engines.server import engine_server
 from entities import TakeDamageInfo
 from entities.helpers import index_from_pointer
@@ -20,6 +22,7 @@ import wcgo.configs as cfg
 import wcgo.database
 import wcgo.entities
 import wcgo.heroes
+import wcgo.items
 import wcgo.menus
 import wcgo.player
 import wcgo.strings
@@ -41,7 +44,8 @@ def load():
     """Setup the plugin."""
     # Make sure there are proper heroes on the server
     wcgo.utilities.import_modules(wcgo.heroes)
-    heroes = wcgo.entities.Hero.get_classes()
+    wcgo.utilities.import_modules(wcgo.items)
+    heroes = wcgo.entities.Hero.get_subclass_dict()
     if not heroes:
         raise NotImplementedError(
             "There are no heroes on the server")
@@ -118,9 +122,11 @@ def _on_hero_level_up(hero, player, levels):
 
 # Say command and client command decorations
 
+@ClientCommand('wcgo')
 @SayCommand('wcgo')
-def _main_say_command(command, index, team):
+def _main_say_command(command, index, team=None):
     wcgo.menus.main_menu.send(index)
+    return CommandReturn.BLOCK
 
 
 # Skill executions, XP gain, and gold gain
@@ -155,6 +161,8 @@ def _on_player_death(event):
     eargs.update(attacker=attacker, victim=victim)
     if attacker is None or attacker.userid == victim.userid:
         victim.hero.execute_skills('player_suicide', player=victim, **eargs)
+        victim.hero.items = [item for item in victim.hero.items
+                             if item.stay_after_death]
         return
     if not (attacker.steamid == 'BOT' and attacker.hero is None):
         attacker.hero.execute_skills('player_kill', player=attacker, **eargs)
