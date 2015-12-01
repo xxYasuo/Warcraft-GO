@@ -70,7 +70,7 @@ class _LevelableEntity(_Entity):
         return self.max_level is not None and self.level >= self.max_level
 
 
-class Hero(_LevelableEntity, metaclass=_HeroMeta):
+class Hero(_LevelableEntity):
     """Character with unique skills to spice up the game."""
 
     _passive_classes = tuple()
@@ -178,7 +178,7 @@ class Skill(_LevelableEntity):
             method(**eargs)
 
 
-class Item(_Entity, metaclass=_ItemMeta):
+class Item(_Entity):
     """Item is a temporary skill that can be bought for a hero."""
 
     stay_after_death = False
