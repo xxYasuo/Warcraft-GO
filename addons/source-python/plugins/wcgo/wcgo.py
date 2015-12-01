@@ -75,7 +75,7 @@ def unload():
 def _init_player(player):
     """Initialize the player."""
     database.load_player(player)
-    hero_classes = wcgo.entities.Hero.get_classes()
+    hero_classes = wcgo.entities.Hero.get_subclass_dict()
     for clsid in cfg.starting_heroes:
         if clsid in hero_classes and clsid not in player.heroes:
             player.heroes[clsid] = hero_classes[clsid](owner=player)

@@ -65,7 +65,7 @@ class Database:
 
     def load_player(self, player):
         """Load player's data from the database."""
-        hero_classes = wcgo.entities.Hero.get_classes()
+        hero_classes = wcgo.entities.Hero.get_subclass_dict()
         if player.steamid == 'BOT':
             steamid = 'BOT_' + player.name
         else:
