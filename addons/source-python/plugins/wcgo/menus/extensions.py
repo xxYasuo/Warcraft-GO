@@ -6,9 +6,17 @@ import menus
 # Warcraft: GO
 from wcgo.menus import strings
 
-# Extension of Source.Python's PagedMenu
 
 class PagedMenu(menus.PagedMenu):
+    """
+    Extend's Source.Python's default menus package with new features
+    and functionality, such as
+    - constants: Display same option on all pages
+    - previous_menu: presssing "Previous" on the first page
+    - next_menu: pressing "Next" on the last page
+    - display_page_info: Display the page number in top right corner
+    """
+
     def __init__(
             self, data=None, select_callback=None, build_callback=None,
             description=None, title=None,
