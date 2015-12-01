@@ -55,7 +55,7 @@ gold_values = {
 show_gold_messages = True
 
 # Prefix for messages sent by the plugin
-message_prefix = '>> WCGO: '
+message_template = '>> \x04Warcraft \x07GO\x01: {}'
 
 reset_skills_cost = 50
 
@@ -65,10 +65,10 @@ starting_heroes = (
 )
 
 # Hero category to use when no category is defined
-default_hero_category = 'others'
+default_hero_category = 'Others'
 
 # Item category to use when no category is defined
-default_item_category = 'others'
+default_item_category = 'Others'
 
 # Items' default sell value's multiplier
 item_sell_value_multiplier = 0.5
