@@ -6,10 +6,11 @@ from messages import SayText2
 # Warcraft: GO
 import wcgo.configs as cfg
 
-def message(index, msg_id, cls=SayText2, use_template=True, **kwargs):
-    cls(cfg.message_template.format(MESSAGES[msg_id].format(**kwargs))
-        if use_template else MESSAGES[msg_id].format(**kwargs)
-        ).send(index)
+def message(index, msg_id, msg_cls=SayText2, use_template=True, **kwargs):
+    msg = MESSAGES[msg_id].format(**kwargs)
+    if use_template:
+        msg = cfg.message_template.format(msg)
+    msg_cls(msg).send(index)
 
 MESSAGES = {
     'Show XP': '\x04{hero} \x01- \x03LV {level} \x01- \x0b{xp}/{needed} XP',
