@@ -21,6 +21,7 @@ from weapons.entity import Weapon
 # Warcraft: GO
 import wcgo.configs as cfg
 import wcgo.database
+import wcgo.effects
 import wcgo.entities
 import wcgo.heroes
 import wcgo.items
@@ -119,6 +120,7 @@ def _on_hero_level_up(hero, player, levels):
     """Alarm the player and play a sound when a hero level's up."""
     wcgo.strings.message(player.index, 'Level Up', level=hero.level)
     wcgo.menus.heroes.current_hero_menu.send(player.index)
+    wcgo.effects.level_up(player)
 
 
 def _execute_spawn_message(event):
