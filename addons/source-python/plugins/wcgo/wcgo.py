@@ -100,7 +100,6 @@ def _save_data_on_disconnect(event):
     """Save the player's data when he disconnects."""
     player = player_from_event(event, 'userid')
     database.save_player(player)
-    del wcgo.player.Player._data[player.userid]
 
 
 @Event('player_spawn')
