@@ -45,11 +45,14 @@ item_sell_menu = PagedMenu(
 # Buy items selection menu instance
 
 def _item_buy_menu_build(menu, index):
+    player = Player(index)
+
     menu.clear()
     for item in menu.items:
+        highlight = player.cash > item.cost
         option = menus.PagedOption(strings.CATEGORIES_ENTITY_MENU['Entity'].format(
             entity=item.name, cost='${}'.format(item.cost)),
-            item)
+            item, highlight=highlight)
         menu.append(option)
 
 def _item_buy_menu_select(menu, index, choice):
