@@ -32,4 +32,8 @@ MESSAGES = {
     'Hostage Pick Up Team': "<font color='#66FF66'>{xp} XP for a hostage being picked up.</font>\n<center><font color='#3366FF'>{hero}: {current}/{needed} XP</font></center>",
     'Hostage Rescue': "<font color='#66FF66'>{xp} XP for rescuing a hostage.</font>\n<center><font color='#3366FF'>{hero}: {current}/{needed} XP</font></center>",
     'Hostage Rescue Team': "<font color='#66FF66'>{xp} XP for a hostage being rescued.</font>\n<center><font color='#3366FF'>{hero}: {current}/{needed} XP</font></center>",
+
+    # Undead Scourge
+    'Levitation': '\x03Reduced damage by {reduced}% to {damage:0.0f}.',
+    'Suicide Bomber': '\x02You exploded on {names}!',
 }

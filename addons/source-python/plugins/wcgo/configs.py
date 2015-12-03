@@ -14,7 +14,7 @@ exp_values = {
 
     # Kill values
     'Kill': 30,
-    'Headshot': 15,
+    'Headshot': 45,
     'Assist': 15,
 
     # Round values
@@ -61,7 +61,7 @@ reset_skills_cost = 50
 
 # Starting heroes for when an user joins the server for the first time
 starting_heroes = (
-    'Test_Hero',
+    'Undead_Scourge',
 )
 
 # Hero category to use when no category is defined
