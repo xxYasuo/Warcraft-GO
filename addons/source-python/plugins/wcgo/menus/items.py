@@ -49,7 +49,7 @@ def _item_buy_menu_build(menu, index):
 
     menu.clear()
     for item in menu.items:
-        highlight = player.cash > item.cost
+        highlight = player.cash >= item.cost
         option = menus.PagedOption(strings.CATEGORIES_ENTITY_MENU['Entity'].format(
             entity=item.name, cost='${}'.format(item.cost)),
             item, highlight=highlight)

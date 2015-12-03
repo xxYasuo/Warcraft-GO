@@ -23,6 +23,7 @@ def _level_info(target):
 # Buy hero display instance.
 
 def _buy_hero_menu_build(menu, index):
+    player = Player(index)
     hero = menu.hero
 
     # Construct menu ready for addition of items
@@ -30,7 +31,9 @@ def _buy_hero_menu_build(menu, index):
         hero=hero.name)
     menu.description = strings.BUY_HERO_MENU['Description'].format(
         description=hero.description)
-    menu.constants = {6: menus.PagedOption(strings.BUY_HERO_MENU['Buy'], hero)}
+    can_use = player.gold >= hero.cost
+    menu.constants = {6: menus.PagedOption(strings.BUY_HERO_MENU['Buy'], hero,
+        highlight=can_use, selectable=can_use)}
     menu.clear()
 
     for skill in hero.skills:
@@ -215,16 +218,22 @@ def _current_hero_menu_build(menu, index):
     menu.title = strings.CURRENT_HERO_MENU['Title']
     menu.description = strings.CURRENT_HERO_MENU['Description'].format(
         hero=hero.name, levelinfo=_level_info(hero))
+    can_use = player.gold >= cfg.reset_skills_cost
     menu.constants = {6: menus.PagedOption(
                 strings.CURRENT_HERO_MENU['Reset'].format(gold=cfg.reset_skills_cost),
-                None)}
+                None,
+                highlight=can_use,
+                selectable=can_use)}
     menu.clear()
 
     for skill in hero.skills:
         # Append the skill in iteration to the menu
+        can_use = not skill.is_max_level() and player.hero.skill_points >= skill.cost
         option = menus.PagedOption(
             strings.CURRENT_HERO_MENU['Skill'].format(skill=skill.name, levelinfo=_level_info(skill)),
-            skill)
+            skill,
+            highlight=can_use,
+            selectable=can_use)
         menu.append(option)
 
     lines_to_fill = 6 - len(hero.skills)
@@ -235,13 +244,10 @@ def _current_hero_menu_build(menu, index):
 def _current_hero_menu_select(menu, index, choice):
     player = Player(index)
     if choice.value is None:
-        if player.gold >= cfg.reset_skills_cost:
-            for skill in player.hero.skills:
-                skill.level = 0
-            player.gold -= cfg.reset_skills_cost
-            strings.message(index, 'Reset Skills Success')
-        else:
-            strings.message(index, 'Reset Skills Failed', cost=cfg.reset_skills_cost)
+        for skill in player.hero.skills:
+            skill.level = 0
+        player.gold -= cfg.reset_skills_cost
+        strings.message(index, 'Reset Skills Success')
     else:
         skill = choice.value
         if (skill.cost <= player.hero.skill_points and
