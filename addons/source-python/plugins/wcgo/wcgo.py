@@ -110,7 +110,7 @@ def _save_data_on_spawn(event):
     if event['teamnum'] in (2, 3):
         player = player_from_event(event, 'userid')
         if player.steamid == 'BOT':
-            return  # No need to save bots all the time
+            return  # No need to save bots on spawn, only on disconnect
         database.save_player(player)
 
 
@@ -118,7 +118,7 @@ def _save_data_on_spawn(event):
 
 def _on_hero_level_up(hero, player, levels):
     """Alarm the player and play a sound when a hero level's up."""
-    wcgo.strings.message(player.index, 'Level Up', level=hero.level)
+    wcgo.strings.chat_message(player.index, 'Level Up', {'level': hero.level})
     wcgo.menus.heroes.current_hero_menu.send(player.index)
     wcgo.effects.level_up(player)
     if player.steamid == 'BOT':
@@ -132,15 +132,14 @@ def _on_hero_level_up(hero, player, levels):
                     break
 
 
-
-
+@Event('player_spawn')
 def _execute_spawn_message(event):
-    player = player_from_event(event, 'userid')
-    if player.steamid == 'BOT' and player.hero is None:
-        return  # Bots sometimes spawn before their data is loaded
-    hero = player.hero
-    wcgo.strings.message(player.index, 'Show XP', hero=hero.name,
-        level=hero.level, xp=hero.xp, needed=hero.required_xp)
+    """Send a message informing player of his level and XP."""
+    if event['teamnum'] in (2, 3):
+        player = player_from_event(event, 'userid')
+        if player.steamid == 'BOT' and player.hero is None:
+            return  # Bots sometimes spawn before their data is loaded
+        wcgo.strings.chat_message(player.index, 'Show XP', {'hero': player.hero})
 
 
 # Say command and client command decorations
@@ -148,23 +147,24 @@ def _execute_spawn_message(event):
 @ClientCommand('wcgo')
 @SayCommand('wcgo')
 def _main_say_command(command, index, team=None):
+    """Send the main menu to a player."""
     wcgo.menus.main_menu.send(index)
     return CommandReturn.BLOCK
+
 
 @ClientCommand('showxp')
 @SayCommand('showxp')
 def _showxp_say_command(command, index, team=None):
+    """Display player's level and xp."""
     player = wcgo.player.Player(index)
-    hero = player.hero
-    wcgo.strings.message(index, 'Show XP', hero=hero.name,
-        level=hero.level, xp=hero.xp, needed=hero.required_xp)
+    wcgo.strings.chat_message(index, 'Show XP', {'hero': player.hero})
     return CommandReturn.BLOCK
 
 
 # Skill executions, XP gain, and gold gain
 
 def _execute_player_skills(event):
-    """Execute skills for one player."""
+    """Execute skills for the player in the event."""
     player = player_from_event(event, 'userid')
     if player.steamid == 'BOT' and player.hero is None:
         return  # Bots sometimes spawn before their data is loaded
@@ -176,36 +176,32 @@ def _execute_player_skills(event):
 @Event('round_start')
 def _round_start(event):
     for player in wcgo.player.PlayerIter():
-        player.hero.execute_skills(
-            'round_start', player=player)
+        player.hero.execute_skills('round_start', player=player)
 
 
 @Event('round_end')
 def _round_end(event):
     winner = event['winner']
-
     for player in wcgo.player.PlayerIter():
-        win_or_loss = 'Win' if player.team is winner else 'Loss'
-        if not player.hero is None:
-            player.hero.give_xp(cfg.exp_values.get('Round {}'.format(win_or_loss), 0))
-            player.gold += cfg.gold_values.get('Round {}'.format(win_or_loss), 0)
-            player.hero.execute_skills('round_end', player=player, winner=winner)
-            wcgo.strings.message(player.index, 'Round {}'.format(win_or_loss),
-                msg_cls=HintText,
-                use_template=False,
-                xp=cfg.exp_values.get('Round {}'.format(win_or_loss), 0),
-                hero=player.hero.name,
-                current=player.hero.xp,
-                needed=player.hero.required_xp)
+        if player.hero is None:
+            continue
+        key = 'Round {0}'.format('Win' if player.team == winner else 'Loss')
+        xp = cfg.exp_values.get(key, 0)
+        player.hero.give_xp(xp)
+        player.gold += cfg.gold_values.get(key, 0)
+        player.hero.execute_skills('round_end', player=player, winner=winner)
+        wcgo.strings.hint_message(
+            player.index, key, {'xp': xp, 'hero': player.hero})
 
 
 @Event('bomb_planted')
 def _bomb_planted(event):
     player = player_from_event(event, 'userid')
     player.hero.give_xp(cfg.exp_values.get('Bomb Plant', 0))
+    ally_xp = cfg.exp_values.get('Bomb Plant Team', 0)
     for ally in wcgo.player.PlayerIter():
         if ally.team == player.team and ally.userid != player.userid:
-            ally.hero.give_xp(cfg.exp_values.get('Bomb Plant Team', 0))
+            ally.hero.give_xp(ally_xp)
     player.hero.execute_skills('bomb_planted', player=player)
 
 
@@ -213,9 +209,10 @@ def _bomb_planted(event):
 def _bomb_exploded(event):
     player = player_from_event(event, 'userid')
     player.hero.give_xp(cfg.exp_values.get('Bomb Explode', 0))
+    ally_xp = cfg.exp_values.get('Bomb Explode Team', 0)
     for ally in wcgo.player.PlayerIter():
-        if ally.team == player.team and ally.userid != player.userid:
-            ally.hero.give_xp(cfg.exp_values.get('Bomb Explode Team', 0))
+        if ally.team == player.team and not ally.userid == player.userid:
+            ally.hero.give_xp(ally_xp)
     player.hero.execute_skills('bomb_exploded', player=player)
 
 
@@ -223,9 +220,10 @@ def _bomb_exploded(event):
 def _bomb_defused(event):
     player = player_from_event(event, 'userid')
     player.hero.give_xp(cfg.exp_values.get('Bomb Defuse', 0))
+    ally_xp = cfg.exp_values.get('Bomb Defuse Team', 0)
     for ally in wcgo.player.PlayerIter():
-        if ally.team == player.team and ally.userid != player.userid:
-            ally.hero.give_xp(cfg.exp_values.get('Bomb Defuse Team', 0))
+        if ally.team == player.team and not ally.userid == player.userid:
+            ally.hero.give_xp(ally_xp)
     player.hero.execute_skills('bomb_defused', player=player)
 
 
@@ -233,9 +231,10 @@ def _bomb_defused(event):
 def _hostage_follows(event):
     player = player_from_event(event, 'userid')
     player.hero.give_xp(cfg.exp_values.get('Hostage Pick Up', 0))
+    ally_xp = cfg.exp_values.get('Hostage Pick Up Team', 0)
     for ally in wcgo.player.PlayerIter():
-        if ally.team == player.team and ally.userid != player.userid:
-            ally.hero.give_xp(cfg.exp_values.get('Hostage Pick Up Team', 0))
+        if ally.team == player.team and not ally.userid == player.userid:
+            ally.hero.give_xp(ally_xp)
     player.hero.execute_skills('hostage_follows', player=player)
 
 
@@ -243,9 +242,10 @@ def _hostage_follows(event):
 def _hostage_rescued(event):
     player = player_from_event(event, 'userid')
     player.hero.give_xp(cfg.exp_values.get('Hostage Rescue', 0))
+    ally_xp = cfg.exp_values.get('Hostage Rescue Team', 0)
     for ally in wcgo.player.PlayerIter():
-        if ally.team == player.team and ally.userid != player.userid:
-            ally.hero.give_xp(cfg.exp_values.get('Hostage Rescue Team', 0))
+        if ally.team == player.team and not ally.userid == player.userid:
+            ally.hero.give_xp(ally_xp)
     player.hero.execute_skills('hostage_rescued', player=player)
 
 
@@ -253,7 +253,6 @@ def _hostage_rescued(event):
 def _on_player_spawn(event):
     if event['teamnum'] in (2, 3):
         _execute_player_skills(event)
-        _execute_spawn_message(event)
 
 
 @Event('player_jump')
@@ -269,50 +268,32 @@ def _on_player_death(event):
     eargs = event.variables.as_dict()
     del eargs['userid']
     eargs.update(attacker=attacker, victim=victim, assister=assister)
+
+    if assister is not None:
+        assister.hero.execute_skills('player_assist', player=assister, **eargs)
+        xp = cfg.exp_values.get('Assist', 0)
+        assister.hero.give_xp(xp)
+        assister.gold += cfg.gold_values.get('Assist', 2)
+        wcgo.strings.hint_message(
+            assister.index, 'Assist', {'xp': xp, 'hero': assister.hero})
+
     if attacker is None or attacker.userid == victim.userid:
         victim.hero.execute_skills('player_suicide', player=victim, **eargs)
         victim.hero.items = [item for item in victim.hero.items
                              if item.stay_after_death]
         return
-    # Checks if assister exists first, then check if player is bot
-    if not assister is None and assister.steamid != 'BOT':
-        assister.hero.execute_skills('player_assist', player=assister, **eargs)
-        assister.hero.give_xp(cfg.exp_values.get('Assist', 0))
-        assister.gold += cfg.gold_values.get('Assist', 2)
-        wcgo.strings.message(assister.index, 'Assist',
-            msg_cls=HintText,
-            use_template=False,
-            xp=cfg.exp_values.get('Assist', 0),
-            hero=assister.hero.name,
-            current=assister.hero.xp,
-            needed=assister.hero.required_xp)
 
-    if not (attacker.steamid == 'BOT' and attacker.hero is None):
-        attacker.hero.execute_skills('player_kill', player=attacker, **eargs)
-        attacker.gold += cfg.gold_values.get('Kill', 3)
-        if eargs['headshot'] is True:
-            attacker.hero.give_xp(cfg.exp_values.get('Headshot', 0))
-            wcgo.strings.message(attacker.index, 'Headshot',
-                msg_cls=HintText,
-                use_template=False,
-                xp=cfg.exp_values.get('Headshot', 0),
-                hero=attacker.hero.name,
-                current=attacker.hero.xp,
-                needed=attacker.hero.required_xp)
-        else:
-            attacker.hero.give_xp(cfg.exp_values.get('Kill', 0))
-            wcgo.strings.message(attacker.index, 'Kill',
-                msg_cls=HintText,
-                use_template=False,
-                xp=cfg.exp_values.get('Kill', 0),
-                hero=attacker.hero.name,
-                current=attacker.hero.xp,
-                needed=attacker.hero.required_xp)
+    key = 'Headshot' if eargs['headshot'] else 'Kill'
+    attacker.hero.execute_skills('player_kill', player=attacker, **eargs)
+    xp = cfg.exp_values.get(key, 0)
+    attacker.hero.give_xp(xp)
+    attacker.gold += cfg.gold_values.get(key, 3)
+    wcgo.strings.hint_message(
+        attacker.index, key, {'xp': xp, 'hero': attacker.hero})
 
-    if not (victim.steamid == 'BOT' and victim.hero is None):
-        victim.hero.execute_skills('player_death', player=victim, **eargs)
-        victim.hero.items = [item for item in victim.hero.items
-                             if item.stay_after_death]
+    victim.hero.execute_skills('player_death', player=victim, **eargs)
+    victim.hero.items = [item for item in victim.hero.items
+                         if item.stay_after_death]
 
 
 @Event('player_hurt')
