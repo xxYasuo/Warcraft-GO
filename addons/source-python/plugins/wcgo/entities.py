@@ -155,6 +155,12 @@ class Hero(_LevelableEntity):
         cls._skill_classes += (skill_cls,)
         return skill_cls
 
+    def execute_method(self, name, **eargs):
+        """Executes the hero's method with matching name."""
+        method = getattr(self, name, None)
+        if method is not None:
+            method(**eargs)
+
     def execute_skills(self, method_name, **eargs):
         """Execute the hero's skills."""
         for passive in self.passives:
@@ -163,6 +169,7 @@ class Hero(_LevelableEntity):
             skill.execute_method(method_name, **eargs)
         for item in self.items:
             item.execute_method(method_name, **eargs)
+        self.execute_method(method_name, **eargs)
 
 
 class Skill(_LevelableEntity):
