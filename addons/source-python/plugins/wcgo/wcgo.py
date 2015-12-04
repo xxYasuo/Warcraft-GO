@@ -263,8 +263,8 @@ def _on_player_death(event):
         victim.hero.items = [item for item in victim.hero.items
                              if item.stay_after_death]
         return
-
-    if not (assister.steamid == 'BOT' and assister is None):
+    # Checks if assister exists first, then check if player is bot
+    if not assister is None and assister.steamid != 'BOT':
         assister.hero.execute_skills('player_assist', player=assister, **eargs)
         assister.hero.give_xp(cfg.exp_values.get('Assist', 0))
         assister.gold += cfg.gold_values.get('Assist', 2)
