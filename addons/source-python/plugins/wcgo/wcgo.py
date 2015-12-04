@@ -121,22 +121,16 @@ def _on_hero_level_up(hero, player, levels):
     wcgo.strings.message(player.index, 'Level Up', level=hero.level)
     wcgo.menus.heroes.current_hero_menu.send(player.index)
     wcgo.effects.level_up(player)
-
-    # Adding that bots level up skills
     if player.steamid == 'BOT':
-        # Checking whether they can level up a skill
-        can_use = False
-        for skill in hero.skills:
-            if not skill.is_max_level():
-                can_use = True
-                break # No point continuing
-
-        if can_use == True:
-            while hero.skill_points >= 1:
-                skill = random.choice(hero.skills)
-                if skill.is_max_level():
-                    continue
+        skills = [skill for skill in hero.skills.values()
+                  if not skills.is_max_level()]
+        random.shuffle(skills)
+        for skill in skills:
+            if skill.cost <= hero.skill_points:
                 skill.level += 1
+                if hero.skill_points == 0:
+                    break
+
 
 
 
