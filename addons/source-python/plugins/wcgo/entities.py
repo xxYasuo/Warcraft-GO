@@ -160,7 +160,8 @@ class Hero(_LevelableEntity):
         for passive in self.passives:
             passive.execute_method(method_name, **eargs)
         for skill in self.skills:
-            skill.execute_method(method_name, **eargs)
+            if skill.level > 0:
+                skill.execute_method(method_name, **eargs)
         for item in self.items:
             item.execute_method(method_name, **eargs)
 
