@@ -161,6 +161,14 @@ def _showxp_say_command(command, index, team=None):
     return CommandReturn.BLOCK
 
 
+@ClientCommand('ultimate')
+@SayCommand('ultimate')
+def _ultimate_say_command(command, index, team=None):
+    player = wcgo.player.Player(index)
+    player.hero.execute_skills('player_ultimate', player=player)
+    return CommandReturn.BLOCK
+
+
 # Skill executions, XP gain, and gold gain
 
 def _execute_player_skills(event):
