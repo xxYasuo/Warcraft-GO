@@ -109,7 +109,7 @@ def _save_data_on_spawn(event):
     """Save the player's data when he spawns."""
     if event['teamnum'] in (2, 3):
         player = player_from_event(event, 'userid')
-        if player.steamid is 'BOT':
+        if player.steamid == 'BOT':
             return  # No need to save bots all the time
         database.save_player(player)
 
@@ -125,7 +125,7 @@ def _on_hero_level_up(hero, player, levels):
 
 def _execute_spawn_message(event):
     player = player_from_event(event, 'userid')
-    if player.steamid is 'BOT' and player.hero is None:
+    if player.steamid == 'BOT' and player.hero is None:
         return  # Bots sometimes spawn before their data is loaded
     hero = player.hero
     wcgo.strings.message(player.index, 'Show XP', hero=hero.name,
@@ -155,7 +155,7 @@ def _showxp_say_command(command, index, team=None):
 def _execute_player_skills(event):
     """Execute skills for one player."""
     player = player_from_event(event, 'userid')
-    if player.steamid is 'BOT' and player.hero is None:
+    if player.steamid == 'BOT' and player.hero is None:
         return  # Bots sometimes spawn before their data is loaded
     eargs = event.variables.as_dict()
     del eargs['userid']
@@ -193,7 +193,7 @@ def _bomb_planted(event):
     player = player_from_event(event, 'userid')
     player.hero.give_xp(cfg.exp_values.get('Bomb Plant', 0))
     for ally in wcgo.player.PlayerIter():
-        if ally.team is player.team and not ally.userid is player.userid:
+        if ally.team == player.team and ally.userid != player.userid:
             ally.hero.give_xp(cfg.exp_values.get('Bomb Plant Team', 0))
     player.hero.execute_skills('bomb_planted', player=player)
 
@@ -203,7 +203,7 @@ def _bomb_exploded(event):
     player = player_from_event(event, 'userid')
     player.hero.give_xp(cfg.exp_values.get('Bomb Explode', 0))
     for ally in wcgo.player.PlayerIter():
-        if ally.team is player.team and not ally.userid is player.userid:
+        if ally.team == player.team and ally.userid != player.userid:
             ally.hero.give_xp(cfg.exp_values.get('Bomb Explode Team', 0))
     player.hero.execute_skills('bomb_exploded', player=player)
 
@@ -213,7 +213,7 @@ def _bomb_defused(event):
     player = player_from_event(event, 'userid')
     player.hero.give_xp(cfg.exp_values.get('Bomb Defuse', 0))
     for ally in wcgo.player.PlayerIter():
-        if ally.team is player.team and not ally.userid is player.userid:
+        if ally.team == player.team and ally.userid != player.userid:
             ally.hero.give_xp(cfg.exp_values.get('Bomb Defuse Team', 0))
     player.hero.execute_skills('bomb_defused', player=player)
 
@@ -223,7 +223,7 @@ def _hostage_follows(event):
     player = player_from_event(event, 'userid')
     player.hero.give_xp(cfg.exp_values.get('Hostage Pick Up', 0))
     for ally in wcgo.player.PlayerIter():
-        if ally.team is player.team and not ally.userid is player.userid:
+        if ally.team == player.team and ally.userid != player.userid:
             ally.hero.give_xp(cfg.exp_values.get('Hostage Pick Up Team', 0))
     player.hero.execute_skills('hostage_follows', player=player)
 
@@ -233,7 +233,7 @@ def _hostage_rescued(event):
     player = player_from_event(event, 'userid')
     player.hero.give_xp(cfg.exp_values.get('Hostage Rescue', 0))
     for ally in wcgo.player.PlayerIter():
-        if ally.team is player.team and not ally.userid is player.userid:
+        if ally.team == player.team and ally.userid != player.userid:
             ally.hero.give_xp(cfg.exp_values.get('Hostage Rescue Team', 0))
     player.hero.execute_skills('hostage_rescued', player=player)
 
@@ -264,7 +264,7 @@ def _on_player_death(event):
                              if item.stay_after_death]
         return
 
-    if not (assister.steamid is 'BOT' and assister is None):
+    if not (assister.steamid == 'BOT' and assister is None):
         assister.hero.execute_skills('player_assist', player=assister, **eargs)
         assister.hero.give_xp(cfg.exp_values.get('Assist', 0))
         assister.gold += cfg.gold_values.get('Assist', 2)
@@ -276,7 +276,7 @@ def _on_player_death(event):
             current=assister.hero.xp,
             needed=assister.hero.required_xp)
 
-    if not (attacker.steamid is 'BOT' and attacker.hero is None):
+    if not (attacker.steamid == 'BOT' and attacker.hero is None):
         attacker.hero.execute_skills('player_kill', player=attacker, **eargs)
         attacker.gold += cfg.gold_values.get('Kill', 3)
         if eargs['headshot'] is True:
@@ -298,7 +298,7 @@ def _on_player_death(event):
                 current=attacker.hero.xp,
                 needed=attacker.hero.required_xp)
 
-    if not (victim.steamid is 'BOT' and victim.hero is None):
+    if not (victim.steamid == 'BOT' and victim.hero is None):
         victim.hero.execute_skills('player_death', player=victim, **eargs)
         victim.hero.items = [item for item in victim.hero.items
                              if item.stay_after_death]
@@ -332,7 +332,7 @@ def _pre_on_take_damage(args):
         'victim': victim,
         'info': info,
     }
-    if not attacker.active_weapon is -1:
+    if attacker.active_weapon != -1:
         eargs['weapon'] = Weapon(index_from_inthandle(attacker.active_weapon))
 
     if attacker is None or attacker.userid == victim.userid:
