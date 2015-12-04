@@ -2,9 +2,7 @@
 
 from engines.precache import Model
 
-##
-## PRECACHE MODELS
-##
+# Creating models dict. defaultdict will NOT work for this :)
 
 class _models(dict):
 	def __missing__(self, item):

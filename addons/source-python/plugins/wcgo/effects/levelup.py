@@ -8,9 +8,7 @@ from listeners.tick import tick_delays
 
 _tick_model = models['effects/yellowflare.vmt']
 
-##
-## FUNCTIONS
-##
+# Level up functions for effects
 
 def level_up(player):
     pointer = player.give_named_item('env_smokestack', 0, None, False)
