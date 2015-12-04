@@ -1,4 +1,4 @@
-"""Provides the player info menu instance."""
+﻿"""Provides the player info menu instance."""
 
 # Source.Python
 import menus
@@ -11,12 +11,13 @@ from wcgo.menus import strings
 from wcgo.player import Player
 from wcgo.player import PlayerIter
 
-# Levelinfo formatting for use in menus
 
-def _level_info(target):
-    if target.is_max_level():
+def _level_info(entity):
+    """Return the level info string from an entity."""
+    if entity.is_max_level():
         return 'Maxed'
-    return '{target.level}/{target.max_level}'.format(target=target)
+    return '{entity.level}/{entity.max_level}'.format(entity=entity)
+
 
 # Player list menu instance
 
@@ -27,6 +28,7 @@ def _player_list_menu_build(menu, index):
             name=player.name), player)
         menu.append(option)
 
+
 def _player_list_menu_select(menu, index, choice):
     player = choice.value
     player_info_menu.title = strings.PLAYER_INFO_MENU['Title'].format(
@@ -35,10 +37,12 @@ def _player_list_menu_select(menu, index, choice):
     player_info_menu.previous_menu = menu
     return player_info_menu
 
+
 player_list_menu = PagedMenu(
     title=strings.PLAYER_LIST_MENU['Title'],
     build_callback=_player_list_menu_build,
     select_callback=_player_list_menu_select)
+
 
 # Player info menu instance
 
@@ -60,8 +64,10 @@ def _player_info_menu_build(menu, index):
         menu.append(' \n')
         lines_to_fill -= 1
 
+
 def _player_info_menu_select(menu, index, choice):
     return menu
+
 
 player_info_menu = PagedMenu(
     build_callback=_player_info_menu_build,

@@ -1,4 +1,4 @@
-"""Provides the hero menu instances."""
+﻿"""Provides the hero menu instances."""
 
 # Python 3
 import collections
@@ -13,12 +13,14 @@ from wcgo.menus.extensions import PagedMenu
 from wcgo.menus import strings
 from wcgo.player import Player
 
+
 # Levelinfo formatting for use in menus
 
 def _level_info(target):
     if target.is_max_level():
         return 'Maxed'
     return '{target.level}/{target.max_level}'.format(target=target)
+
 
 # Buy hero display instance.
 
@@ -59,9 +61,11 @@ def _buy_hero_menu_select(menu, index, choice):
     else:
         strings.message(index, 'Buy Hero Failed', hero=hero.name, cost=hero.cost)
 
+        
 buy_hero_menu = PagedMenu(
     build_callback=_buy_hero_menu_build,
     select_callback=_buy_hero_menu_select)
+
 
 # Buy heroes selection menu instance
 
@@ -79,9 +83,11 @@ def _buy_heroes_menu_select(menu, index, choice):
     buy_hero_menu.previous_menu = menu
     return buy_hero_menu
 
+
 buy_heroes_menu = PagedMenu(
     build_callback=_buy_heroes_menu_build,
     select_callback=_buy_heroes_menu_select)
+
 
 # Buy heroes category menu instance
 
@@ -110,6 +116,7 @@ def _buy_categories_menu_select(menu, index, choice):
         category=category)
     buy_heroes_menu.previous_menu = menu
     return buy_heroes_menu
+
 
 buy_categories_menu = PagedMenu(
     title=strings.CATEGORIES_MENU['Title'],
@@ -172,6 +179,7 @@ def _owned_heroes_menu_select(menu, index, choice):
     owned_hero_menu.previous_menu = menu
     return owned_hero_menu
 
+
 owned_heroes_menu = PagedMenu(
     build_callback=_owned_heroes_menu_build,
     select_callback=_owned_heroes_menu_select)
@@ -203,10 +211,12 @@ def _owned_categories_menu_select(menu, index, choice):
     owned_heroes_menu.previous_menu = menu
     return owned_heroes_menu
 
+
 owned_categories_menu = PagedMenu(
     title=strings.CATEGORIES_MENU['Title'],
     build_callback=_owned_categories_menu_build,
     select_callback=_owned_categories_menu_select)
+
 
 # Current hero menu instance
 
@@ -241,6 +251,7 @@ def _current_hero_menu_build(menu, index):
         menu.append(' \n')
         lines_to_fill -= 1
 
+
 def _current_hero_menu_select(menu, index, choice):
     player = Player(index)
     if choice.value is None:
@@ -255,6 +266,7 @@ def _current_hero_menu_select(menu, index, choice):
                 not skill.is_max_level()):
             skill.level += 1
     return menu
+
 
 current_hero_menu = PagedMenu(
     build_callback=_current_hero_menu_build,

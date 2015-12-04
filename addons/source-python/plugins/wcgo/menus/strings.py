@@ -6,9 +6,11 @@ from messages import SayText2
 # Warcraft: GO
 from wcgo.configs import message_template
 
+
 def message(index, msg_id, **kwargs):
-    SayText2(message_template.format(
-        MESSAGES[msg_id].format(**kwargs))).send(index)
+    """Send a message to a player."""
+    message = MESSAGES[msg_id].format(**kwargs)
+    SayText2(message_template.format(message)).send(index)
 
 SEPARATOR = ' '
 BACK = 'Back'

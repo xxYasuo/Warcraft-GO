@@ -13,17 +13,20 @@ from wcgo.menus.items import item_sell_menu
 from wcgo.menus.players import player_list_menu
 from wcgo.player import Player
 
+
 # Main menu instance
 
 def _main_menu_build(menu, index):
     player = Player(index)
     menu[1].text = menu[1].text.format(gold=player.gold)
 
+
 def _main_menu_select(menu, index, choice):
     next_menu = choice.value
     if next_menu is not None:
         next_menu.previous_menu = menu
         return next_menu
+
 
 main_menu = menus.SimpleMenu(
     [
@@ -41,4 +44,5 @@ main_menu = menus.SimpleMenu(
         menus.Text(strings.SEPARATOR),
         menus.SimpleOption(9, strings.CLOSE, None, highlight=False)
     ],
-    build_callback=_main_menu_build, select_callback=_main_menu_select)
+    build_callback=_main_menu_build,
+    select_callback=_main_menu_select)
