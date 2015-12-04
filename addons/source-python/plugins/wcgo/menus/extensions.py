@@ -24,7 +24,6 @@ class PagedMenu(menus.PagedMenu):
             constants=None, previous_menu=None, next_menu=None,
             display_page_info=False):
         """Initializes a new PagedMenu instance."""
-
         super().__init__(
             data, select_callback, build_callback,
             description, title, top_seperator, bottom_seperator, fill
@@ -36,21 +35,19 @@ class PagedMenu(menus.PagedMenu):
 
     def _get_max_item_count(self):
         """Returns the maximum possible item count per page."""
-
         return 6 - len(self.constants)
 
     def _format_header(self, player_index, page, slots):
         """Prepares the header for the menu."""
-
         # Create the page info string
         info = ''
         if self.display_page_info:
             info = ' [{0}/{1}]'.format(page.index + 1, self.page_count)
 
+        # Create the buffer
         if self.title:
             buffer = '{0}{1}\n'.format(
-                menus.base._translate_text(self.title, player_index), info
-            )
+                menus.base._translate_text(self.title, player_index), info)
         elif info:
             buffer = '{0}\n'.format(info)
         else:
@@ -58,7 +55,8 @@ class PagedMenu(menus.PagedMenu):
 
         # Set description if present
         if self.description is not None:
-            buffer += menus.base._translate_text(self.description, player_index) + '\n'
+            buffer += menus.base._translate_text(
+                self.description, player_index) + '\n'
 
         # Set the top seperator if present
         if self.top_seperator is not None:
@@ -68,7 +66,6 @@ class PagedMenu(menus.PagedMenu):
 
     def _format_body(self, player_index, page, slots):
         """Prepares the body for the menu."""
-
         buffer = ''
 
         # Get all the options for the current page
@@ -115,7 +112,6 @@ class PagedMenu(menus.PagedMenu):
 
     def _format_footer(self, player_index, page, slots):
         """Prepares the footer for the menu."""
-
         buffer = ''
 
         # Set the bottom seperator if present
@@ -127,8 +123,7 @@ class PagedMenu(menus.PagedMenu):
             strings.BACK,
             self.previous_menu,
             highlight=False,
-            selectable=False
-        )
+            selectable=False)
         if page.index > 0 or self.previous_menu:
             option_previous.highlight = option_previous.selectable = True
             slots.add(7)
@@ -139,8 +134,7 @@ class PagedMenu(menus.PagedMenu):
             strings.NEXT,
             self.next_menu,
             highlight=False,
-            selectable=False
-        )
+            selectable=False)
         if page.index < self.last_page_index or self.next_menu:
             option_next.highlight = option_next.selectable = True
             slots.add(8)
@@ -149,8 +143,7 @@ class PagedMenu(menus.PagedMenu):
         # Add "Close" option
         option_close = menus.PagedOption(
             strings.CLOSE,
-            highlight=False
-        )
+            highlight=False)
         buffer += option_close._render(player_index, 9)
         slots.add(9)
 
@@ -159,38 +152,10 @@ class PagedMenu(menus.PagedMenu):
 
     def _select(self, player_index, choice_index):
         """Handles a menu selection."""
-
-        # Do nothing if the menu is being closed
-        if choice_index == 9:
-            del self._player_pages[player_index]
-            return None
-
-        # Get the player's current page
         page = self._player_pages[player_index]
-
-        # If "Previous" was clicked
-        if choice_index == 7:
-
-            # Display previous page?
-            if page.index > 0:
-                self.set_player_page(player_index, page.index - 1)
-                return self
-
-            # Move to previous menu?
-            elif self.previous_menu:
-                return self.previous_menu
-
-        # If "Next" was clicked
-        elif choice_index == 8:
-
-            # Display Next page?
-            if page.index < self.last_page_index:
-                self.set_player_page(player_index, page.index + 1)
-                return self
-
-            # Move to next menu?
-            elif self.next_menu:
-                return self.next_menu
-
-        # Let the super class handle the rest
+        if choice_index == 7 and page.index == 0 and self.previous_menu:
+            return self.previous_menu
+        elif (choice_index == 8 and page.index == self.last_page_index
+                and self.next_menu):
+            return self.next_menu
         return super()._select(player_index, choice_index)
