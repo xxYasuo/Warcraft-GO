@@ -10,13 +10,10 @@ from commands.client import ClientCommand
 from engines.server import engine_server
 from entities import TakeDamageInfo
 from entities.helpers import index_from_pointer
-from entities.helpers import index_from_inthandle
 from entities.hooks import EntityPreHook
 from entities.hooks import EntityCondition
 from events import Event
 from memory import make_object
-from messages import HintText
-from weapons.entity import Weapon
 
 # Warcraft: GO
 import wcgo.configs as cfg
@@ -122,8 +119,7 @@ def _on_hero_level_up(hero, player, levels):
     wcgo.menus.heroes.current_hero_menu.send(player.index)
     wcgo.effects.level_up(player)
     if player.steamid == 'BOT':
-        skills = [skill for skill in hero.skills.values()
-                  if not skills.is_max_level()]
+        skills = [skill for skill in hero.skills if not skill.is_max_level()]
         random.shuffle(skills)
         for skill in skills:
             if skill.cost <= hero.skill_points:
@@ -314,9 +310,9 @@ def _on_player_hurt(event):
     if attacker is None or attacker.userid == victim.userid:
         victim.hero.execute_skills('player_self_injury', player=victim, **eargs)
         return
-    if not attacker.hero is None:
+    if attacker.hero is not None:
         attacker.hero.execute_skills('player_attack', player=attacker, **eargs)
-    if not victim.hero is None:
+    if victim.hero is not None:
         victim.hero.execute_skills('player_victim', player=victim, **eargs)
 
 
