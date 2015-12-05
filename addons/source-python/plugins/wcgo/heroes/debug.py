@@ -67,3 +67,71 @@ class Burst_of_Speed(Skill):
         speed = 0.1 * self.level * player.speed
         player.shift_property('speed', speed, 3)
         SayText2(self._msg.format(speed=self.level * 10)).send(player.index)
+
+
+# =====================================================================
+# >> Mahi's Debug Hero
+# =====================================================================
+class Mahi_Debug_Hero(Hero):
+    "Mahi's hero for debugging Warcraft: GO."
+    authors = 'Mahi',
+    category = 'DEBUG'
+    cost = 10
+
+
+@Mahi_Debug_Hero.skill
+class Burn_Until_Hit(Skill):
+    "Burn your victims until you're hit."
+    max_level = 1
+
+    def __init__(self, level=0):
+        super().__init__(level)
+        self._burns = {}
+
+    def player_attack(self, victim, **eargs):
+        if victim.userid not in self._burns:
+            self._burns[victim.userid] = victim.burn()
+
+    def player_victim(self, **eargs):
+        for burn in self._burns.values():
+            burn.cancel()
+        self._burns.clear()
+
+
+@Mahi_Debug_Hero.skill
+class Enrage(Skill):
+    "Gain bonus damage when hit."
+    max_level = None
+
+    def player_spawn(self, **eargs):
+        self._enrage = 0
+
+    def player_victim(self, player, **eargs):
+        self._enrage += 1
+
+    def player_pre_attack(self, damage, **eargs):
+        damage += self._enrage * self.level
+
+
+@Mahi_Debug_Hero.skill
+class Movement_Speed_Stack(Skill):
+    "Gain movement speed on attack, release on ultimate."
+    max_level = 3
+
+    def player_spawn(self, **eargs):
+        self._stack = 0
+
+    def player_attack(self, player, **eargs):
+        speed = 0.1 * self.level
+        player.speed += speed
+        self._stack += speed
+
+    def _cooldownf(self, **eargs):
+        return self._stack * 10
+
+    _cd_msg = 'You have to keep running for {remaining_cd} more seconds!'
+
+    @cooldownf(_cooldownf, message=_cd_msg)
+    def player_ultimate(self, player, **eargs):
+        player.speed -= self._stack
+        self._stack = 0
