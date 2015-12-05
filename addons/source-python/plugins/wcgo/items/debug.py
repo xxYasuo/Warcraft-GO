@@ -28,6 +28,7 @@ class Regeneration_Suit(Item):
             player.health = min(player.health + 3, 100)
 
     def player_spawn(self, player, **eargs):
+        self._repeat.args = (player,)
         self._repeat.start(1, 0)
 
     def player_death(self, **eargs):
@@ -53,3 +54,15 @@ class Regeneration_Suit(Item):
         self._delay = None
 
     
+# ======================================================================
+# >> Adrenaline Shot
+# ======================================================================
+class Adrenaline_Shot(Item):
+    "Inject yourself with adrenaline for a 2 second speed boost and godmode."
+    authors = 'Mahi',
+    category = 'DEBUG'
+    cost = 4000
+
+    def item_purchase(self, player, **eargs):
+        player.shift_property('speed', 0.7, duration=2)
+        self._effect = player.godmode(2)
