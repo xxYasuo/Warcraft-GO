@@ -83,19 +83,23 @@ class Mahi_Debug_Hero(Hero):
 class Burn_Until_Hit(Skill):
     "Burn your victims until you're hit."
     max_level = 1
+    _msg_burn = '>> \x04Burn: \x02You ignited {name}'
+    _msg_hit = SayText2('>> \x04Hit: \x02Your ignites went off for being hit')
 
     def __init__(self, level=0):
         super().__init__(level)
         self._burns = {}
 
-    def player_attack(self, victim, **eargs):
+    def player_attack(self, player, victim, **eargs):
         if victim.userid not in self._burns:
             self._burns[victim.userid] = victim.burn()
+            SayText2(self._msg_burn.format(victim.name)).send(player.index)
 
-    def player_victim(self, **eargs):
+    def player_victim(self, player, **eargs):
         for burn in self._burns.values():
             burn.cancel()
         self._burns.clear()
+        self._msg_hit.send(player.index)
 
 
 @Mahi_Debug_Hero.skill
