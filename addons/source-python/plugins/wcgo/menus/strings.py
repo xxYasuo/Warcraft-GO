@@ -60,6 +60,7 @@ OWNED_HERO_MENU = {
     'Title': 'Warcraft ({hero})',
     'Description': '{description}',
     'Change': 'Change',
+    'Passive': 'P. {passive} \n{description}',
     'Skill': '{skill} ({levelinfo})\n{description}',
 }
 
@@ -67,6 +68,7 @@ BUY_HERO_MENU = {
     'Title': 'Warcraft ({hero})',
     'Description': '{description}',
     'Buy': 'Buy',
+    'Passive': 'P. {passive} \n{description}',
     'Skill': '{skill} ({levelinfo})\n{description}',
 }
 

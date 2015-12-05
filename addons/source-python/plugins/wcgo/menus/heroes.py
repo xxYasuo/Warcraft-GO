@@ -38,6 +38,10 @@ def _buy_hero_menu_build(menu, index):
         highlight=can_use, selectable=can_use)}
     menu.clear()
 
+    for passive in hero.passives:
+        menu.append(strings.BUY_HERO_MENU['Passive'].format(
+            passive=passive.name, description=passive.description))
+
     for skill in hero.skills:
         # Append the skill in iteration to the menu
         option = menus.PagedOption(
@@ -136,6 +140,10 @@ def _owned_hero_menu_build(menu, index):
         description=hero.description)
     menu.constants = {6: menus.PagedOption(strings.OWNED_HERO_MENU['Change'], hero)}
     menu.clear()
+
+    for passive in hero.passives:
+        menu.append(strings.OWNED_HERO_MENU['Passive'].format(
+            passive=passive.name, description=passive.description))
 
     for skill in hero.skills:
         # Append the skill in iteration to the menu

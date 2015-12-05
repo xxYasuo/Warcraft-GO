@@ -30,6 +30,11 @@ class Undead_Scourge(Hero):
     max_level = 40
     category = 'DEFAULT'
 
+
+@Undead_Scourge.passive
+class Undead_Rage(Skill):
+    'Obtain increased speed due to your auras.'
+
     def player_spawn(self, player, **eargs):
         player.speed = 1.18
 
