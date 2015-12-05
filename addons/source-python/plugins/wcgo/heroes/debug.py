@@ -92,7 +92,7 @@ class Burn_Until_Hit(Skill):
     def player_attack(self, player, victim, **eargs):
         if victim.userid not in self._burns:
             self._burns[victim.userid] = victim.burn()
-            SayText2(self._msg_burn.format(victim.name)).send(player.index)
+            SayText2(self._msg_burn.format(name=victim.name)).send(player.index)
 
     def player_victim(self, player, **eargs):
         for burn in self._burns.values():
