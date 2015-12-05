@@ -7,7 +7,6 @@ import collections
 import menus
 
 # Warcraft: GO
-import wcgo.configs as cfg
 import wcgo.entities
 from wcgo.menus.extensions import PagedMenu
 from wcgo.menus import strings
@@ -81,10 +80,9 @@ def _item_categories_menu_build(menu, index):
     # Retrieve all items available for player
     categories = collections.defaultdict(list)
     item_classes = wcgo.entities.Item.get_subclass_dict()
-    item_counts = collections.Counter(item.clsid for item in player.hero.items)
-    for clsid, count in item_counts.items():
-        item_cls = item_classes[clsid]
-        if count < item_cls.limit:
+    item_counter = collections.Counter(item.clsid for item in player.hero.items)
+    for clsid, item_cls in item_classes.items():
+        if item_counter[clsid] < item_cls.limit:
             categories[item_cls.category].append(item_cls)
 
     # Construct menu from categories
