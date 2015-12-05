@@ -131,7 +131,7 @@ class Movement_Speed_Stack(Skill):
         self._stack += speed
 
     def _cooldownf(self, **eargs):
-        return self._stack * 10
+        return 2 + self._stack * 10
 
     _cd_msg = 'You have to keep running for {remaining_cd} more seconds!'
 
