@@ -1,5 +1,4 @@
-
-"""Debug hero for wcgo testing."""
+"""Debug heroes for WCGO testing."""
 
 # Python 3
 import random
