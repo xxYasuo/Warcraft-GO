@@ -113,8 +113,8 @@ class Enrage(Skill):
     def player_victim(self, player, **eargs):
         self._enrage += 1
 
-    def player_pre_attack(self, damage, **eargs):
-        damage += self._enrage * self.level
+    def player_pre_attack(self, info, **eargs):
+        info.damage += self._enrage * self.level
 
 
 @Mahi_Debug_Hero.skill
