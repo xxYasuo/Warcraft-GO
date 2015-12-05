@@ -42,12 +42,12 @@ class Lifesteal(Skill):
 
     max_level = 8
 
-    def player_pre_attack(self, attacker, info, **eargs):
+    def player_pre_attack(self, player, info, **eargs):
         chance = 20 + (5 * self.level)
         if randint(0, 100) <= chance:
-            health = info.damage * 0.6
-            attacker.health += health
-            message(attacker.index,
+            health = int(info.damage * 0.6)
+            player.health += health
+            message(player.index,
                 '\x02Stole {health} health from enemy'.format(health=health))
 
 # Create cooldown skill
@@ -70,7 +70,7 @@ class Burst_of_Speed(Skill):
 
     @cooldown(10)
     def player_ultimate(self, player, **eargs):
-        speed = 1 + (0.1 * self.level)
-        player.speed *= speed
-        message(attacker.index,
-                '\x03You gained {speed}% more speed.'.format(speed=speed*100))
+        speed = (0.1 * self.level) * player.speed
+        player.shift_property('speed', speed, 3)
+        message(player.index,
+                '\x03You gained {speed}% more speed.'.format(speed=self.level*10))
