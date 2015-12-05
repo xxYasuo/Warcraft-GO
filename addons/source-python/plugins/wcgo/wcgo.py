@@ -10,10 +10,12 @@ from commands.client import ClientCommand
 from engines.server import engine_server
 from entities import TakeDamageInfo
 from entities.helpers import index_from_pointer
+from entities.helpers import index_from_inthandle
 from entities.hooks import EntityPreHook
 from entities.hooks import EntityCondition
 from events import Event
 from memory import make_object
+from weapons.entity import Weapon
 
 # Warcraft: GO
 import wcgo.configs as cfg
