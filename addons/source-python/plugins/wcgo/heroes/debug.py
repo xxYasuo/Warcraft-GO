@@ -86,8 +86,8 @@ class Burn_Until_Hit(Skill):
     _msg_burn = '>> \x04Burn: \x02You ignited {name}'
     _msg_hit = SayText2('>> \x04Hit: \x02Your ignites went off for being hit')
 
-    def __init__(self, level=0):
-        super().__init__(level)
+    def __init__(self, owner=None, level=0):
+        super().__init__(owner, level)
         self._burns = {}
 
     def player_attack(self, player, victim, **eargs):
