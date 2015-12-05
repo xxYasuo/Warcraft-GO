@@ -1,16 +1,19 @@
 """Module for supplying a level up effect."""
 
-from wcgo.effects import models
-
+# Source.Python
 from entities.entity import Entity
 from entities.helpers import index_from_pointer
 from listeners.tick import tick_delays
 
+# Warcraft: GO
+from wcgo.effects import models
+
+# Globals
 _tick_model = models['effects/yellowflare.vmt']
 
-# Level up functions for effects
 
 def level_up(player):
+    """Display the level up effect on a player."""
     pointer = player.give_named_item('env_smokestack', 0, None, False)
     entity = Entity(index_from_pointer(pointer))
     entity.add_output('basespread 10')
