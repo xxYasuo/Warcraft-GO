@@ -117,7 +117,7 @@ def _save_data_on_spawn(event):
 
 def _on_hero_level_up(hero, player, levels):
     """Alarm the player and play a sound when a hero level's up."""
-    wcgo.strings.chat_message(player.index, 'Level Up', {'level': hero.level})
+    wcgo.strings.chat_message(player.index, 'Level Up', level=hero.level)
     wcgo.menus.heroes.current_hero_menu.send(player.index)
     wcgo.effects.level_up(player)
     if player.steamid == 'BOT':
@@ -137,7 +137,7 @@ def _execute_spawn_message(event):
         player = player_from_event(event, 'userid')
         if player.steamid == 'BOT' and player.hero is None:
             return  # Bots sometimes spawn before their data is loaded
-        wcgo.strings.chat_message(player.index, 'Show XP', {'hero': player.hero})
+        wcgo.strings.chat_message(player.index, 'Show XP', hero=player.hero)
 
 
 # Say command and client command decorations
@@ -155,7 +155,7 @@ def _main_say_command(command, index, team=None):
 def _showxp_say_command(command, index, team=None):
     """Display player's level and xp."""
     player = wcgo.player.Player(index)
-    wcgo.strings.chat_message(index, 'Show XP', {'hero': player.hero})
+    wcgo.strings.chat_message(index, 'Show XP', hero=player.hero)
     return CommandReturn.BLOCK
 
 
@@ -196,8 +196,7 @@ def _round_end(event):
         player.hero.give_xp(xp)
         player.gold += cfg.gold_values.get(key, 0)
         player.hero.execute_skills('round_end', player=player, winner=winner)
-        wcgo.strings.hint_message(
-            player.index, key, {'xp': xp, 'hero': player.hero})
+        wcgo.strings.hint_message(player.index, key, xp=xp, hero=player.hero)
 
 
 @Event('bomb_planted')
@@ -281,7 +280,7 @@ def _on_player_death(event):
         assister.hero.give_xp(xp)
         assister.gold += cfg.gold_values.get('Assist', 2)
         wcgo.strings.hint_message(
-            assister.index, 'Assist', {'xp': xp, 'hero': assister.hero})
+            assister.index, 'Assist', xp=xp, hero=assister.hero)
 
     if attacker is None or attacker.userid == victim.userid:
         victim.hero.execute_skills('player_suicide', player=victim, **eargs)
@@ -294,8 +293,7 @@ def _on_player_death(event):
     xp = cfg.exp_values.get(key, 0)
     attacker.hero.give_xp(xp)
     attacker.gold += cfg.gold_values.get(key, 3)
-    wcgo.strings.hint_message(
-        attacker.index, key, {'xp': xp, 'hero': attacker.hero})
+    wcgo.strings.hint_message(attacker.index, key, xp=xp, hero=attacker.hero)
 
     victim.hero.execute_skills('player_death', player=victim, **eargs)
     victim.hero.items = [item for item in victim.hero.items
