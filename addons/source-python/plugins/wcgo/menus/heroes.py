@@ -26,28 +26,30 @@ def _level_info(target):
 
 def _buy_hero_menu_build(menu, index):
     player = Player(index)
-    hero = menu.hero
+    hero_cls = menu.hero_cls
 
     # Construct menu ready for addition of items
     menu.title = strings.BUY_HERO_MENU['Title'].format(
-        hero=hero.name)
+        hero=hero_cls.name)
     menu.description = strings.BUY_HERO_MENU['Description'].format(
-        description=hero.description)
-    can_use = player.gold >= hero.cost
+        description=hero_cls.description)
+    can_use = player.gold >= hero_cls.cost
     buy_option = menus.PagedOption(
-        strings.BUY_HERO_MENU['Buy'], hero, highlight=can_use, selectable=can_use)
+        strings.BUY_HERO_MENU['Buy'], hero_cls, highlight=can_use, selectable=can_use)
     menu.constants = {6: buy_option}
     menu.clear()
 
-    for passive in hero.passives:
+    for passive_cls in hero_cls._passive_classes:
         menu.append(strings.BUY_HERO_MENU['Passive'].format(
-            passive=passive.name, description=passive.description))
+            passive=passive_cls.name, description=passive_cls.description))
 
-    for skill in hero.skills:
+    for skill_cls in hero_cls._skill_classes:
         # Append the skill in iteration to the menu
         option = menus.PagedOption(
             strings.BUY_HERO_MENU['Skill'].format(
-                skill=skill.name, levelinfo=_level_info(skill), description=skill.description),
+                skill=skill_cls.name,
+                levelinfo='Levels: {0}'.format(skill_cls.max_level),
+                description=skill_cls.description),
             None)
         menu.append(option)
 
@@ -56,15 +58,17 @@ def _buy_hero_menu_build(menu, index):
 
 def _buy_hero_menu_select(menu, index, choice):
     player = Player(index)
-    hero = choice.value
-    if hero is None:
+    hero_cls = choice.value
+    if hero_cls is None:
         return menu
-    elif hero.cost <= player.gold:
-        player.heroes[hero.clsid] = hero
-        player.gold -= hero.cost
-        strings.message(index, 'Buy Hero Success', hero=hero.name, cost=hero.cost)
+    elif hero_cls.cost <= player.gold:
+        player.heroes[hero_cls.clsid] = hero_cls(owner=player)
+        player.gold -= hero_cls.cost
+        strings.message(
+            index, 'Buy Hero Success', hero=hero_cls.name, cost=hero_cls.cost)
     else:
-        strings.message(index, 'Buy Hero Failed', hero=hero.name, cost=hero.cost)
+        strings.message(
+            index, 'Buy Hero Failed', hero=hero_cls.name, cost=hero_cls.cost)
 
 
 buy_hero_menu = PagedMenu(
@@ -76,15 +80,15 @@ buy_hero_menu = PagedMenu(
 
 def _buy_heroes_menu_build(menu, index):
     menu.clear()
-    for hero in menu.heroes:
+    for hero_cls in menu.hero_classes:
         option = menus.PagedOption(strings.CATEGORIES_ENTITY_MENU['Entity'].format(
-            entity=hero.name, cost='{} Gold'.format(hero.cost)),
-            hero)
+            entity=hero_cls.name, cost='{} Gold'.format(hero_cls.cost)),
+            hero_cls)
         menu.append(option)
 
 
 def _buy_heroes_menu_select(menu, index, choice):
-    buy_hero_menu.hero = choice.value()
+    buy_hero_menu.hero_cls = choice.value
     buy_hero_menu.previous_menu = menu
     return buy_hero_menu
 
@@ -101,10 +105,10 @@ def _buy_categories_menu_build(menu, index):
 
     # Retrieve all buyable heroes available for player
     categories = collections.defaultdict(list)
-    heroes = wcgo.entities.Hero.get_subclass_dict()
-    for hero in heroes:
-        if hero not in player.heroes:
-            categories[heroes[hero].category].append(heroes[hero])
+    hero_classes = wcgo.entities.Hero.get_subclass_dict()
+    for clsid, hero_cls in hero_classes.items():
+        if clsid not in player.heroes:
+            categories[hero_cls.category].append(hero_cls)
 
     menu.clear()
 
@@ -115,8 +119,7 @@ def _buy_categories_menu_build(menu, index):
 
 
 def _buy_categories_menu_select(menu, index, choice):
-    category, heroes = choice.value
-    buy_heroes_menu.heroes = heroes
+    category, buy_heroes_menu.hero_classes = choice.value
     buy_heroes_menu.title = strings.CATEGORIES_ENTITY_MENU['Title'].format(
         category=category)
     buy_heroes_menu.previous_menu = menu
