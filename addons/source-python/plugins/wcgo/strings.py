@@ -9,8 +9,8 @@ from translations.strings import LangStrings
 from wcgo.info import info
 
 
-MISC_MESSAGES = LangStrings(info.basename + '/misc')
-XP_MESSAGES = LangStrings(info.basename + '/xp')
+MISC_MESSAGES = LangStrings(info.basename + '/misc_messages')
+XP_MESSAGES = LangStrings(info.basename + '/xp_messages')
 
 
 def chat_message(player_index, msg_id, **kwargs):
