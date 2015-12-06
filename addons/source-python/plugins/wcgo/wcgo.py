@@ -326,7 +326,13 @@ def _on_player_hurt(event):
 @EntityPreHook(EntityCondition.is_player, 'on_take_damage')
 def _pre_on_take_damage(args):
     info = make_object(TakeDamageInfo, args[1])
-    attacker = wcgo.player.Player(info.attacker) if info.attacker else None
+
+    entity = Entity(info.attacker) if info.attacker else None
+    if entity is not None and entity.is_player():
+        attacker = wcgo.player.Player(entity.index)
+    else:
+        attacker = None
+
     victim = wcgo.player.Player(index_from_pointer(args[0]))
     eargs = {
         'attacker': attacker,
@@ -334,7 +340,7 @@ def _pre_on_take_damage(args):
         'info': info,
     }
     # Adds the weapon argument dependent on scenario
-    if not attacker is None and attacker.active_weapon != -1:
+    if attacker is not None and attacker.active_weapon != -1:
         eargs['weapon'] = Weapon(index_from_inthandle(attacker.active_weapon))
     else:
         eargs['weapon'] = None
