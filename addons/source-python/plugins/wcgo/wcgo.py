@@ -9,6 +9,7 @@ from commands.say import SayCommand
 from commands.client import ClientCommand
 from engines.server import engine_server
 from entities import TakeDamageInfo
+from entities.entity import Entity
 from entities.helpers import index_from_pointer
 from entities.helpers import index_from_inthandle
 from entities.hooks import EntityPreHook
@@ -158,7 +159,8 @@ def _main_say_command(command, index, team=None):
 def _showxp_say_command(command, index, team=None):
     """Display player's level and xp."""
     player = wcgo.player.Player(index)
-    wcgo.strings.chat_message(index, 'Show XP', hero=player.hero)
+    xp_info = '{0}/{1}'.format(player.hero.xp, player.hero.required_xp) if player.hero.required_xp else player.hero.xp
+    wcgo.strings.chat_message(index, 'Show XP', hero=player.hero, xp=xp_info)
     return CommandReturn.BLOCK
 
 
