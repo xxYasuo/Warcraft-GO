@@ -37,6 +37,8 @@ class Lifesteal(Skill):
     _msg = '>> \x04Lifesteal: \x02Stole {health} health from enemy'
 
     def player_pre_attack(self, player, info, **eargs):
+        if player.team == victim.team:
+            return
         chance = 20 + (5 * self.level)
         if random.randint(0, 100) <= chance:
             health = int(info.damage * 0.6)
@@ -90,6 +92,8 @@ class Burn_Until_Hit(Skill):
         self._burns = {}
 
     def player_attack(self, player, victim, **eargs):
+        if player.team == victim.team:
+            return
         if victim.userid not in self._burns:
             self._burns[victim.userid] = victim.burn()
             SayText2(self._msg_burn.format(name=victim.name)).send(player.index)
