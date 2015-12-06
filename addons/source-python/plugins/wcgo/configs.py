@@ -48,12 +48,6 @@ gold_values = {
     'Round Loss': 2
 }
 
-# Show messages for gold gain
-show_gold_messages = True
-
-# Prefix for messages sent by the plugin
-message_template = '>> \x04Warcraft \x07GO\x01: {}'
-
 # How much gold does it cost to reset hero's skills
 reset_skills_cost = 50
 
