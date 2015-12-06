@@ -57,7 +57,7 @@ def _item_buy_menu_select(menu, index, choice):
     player = Player(index)
     item = choice.value
     if player.cash >= item.cost:
-        item = item()
+        item = item(owner=player)
         player.hero.items.append(item)
         item.execute_method('item_purchase', item=item, player=player)
         player.cash -= item.cost
