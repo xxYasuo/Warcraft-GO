@@ -85,8 +85,8 @@ class Burn_Until_Hit(Skill):
     _msg_burn = '>> \x04Burn: \x02You ignited {name}'
     _msg_hit = SayText2('>> \x04Hit: \x02Your ignites went off for being hit')
 
-    def __init__(self, owner=None, level=0):
-        super().__init__(owner, level)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self._burns = {}
 
     def player_attack(self, player, victim, **eargs):
@@ -106,6 +106,10 @@ class Enrage(Skill):
     "Gain bonus damage when hit."
     max_level = None
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._enrage = 0
+
     def player_spawn(self, **eargs):
         self._enrage = 0
 
@@ -120,6 +124,10 @@ class Enrage(Skill):
 class Movement_Speed_Stack(Skill):
     "Gain movement speed on attack, release on ultimate."
     max_level = 3
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._stack = 0
 
     def player_spawn(self, **eargs):
         self._stack = 0
