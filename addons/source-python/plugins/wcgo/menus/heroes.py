@@ -19,8 +19,11 @@ from wcgo.player import Player
 def _level_info(target):
     if target.is_max_level():
         return 'Maxed'
-    return '{target.level}/{target.max_level}'.format(target=target)
 
+    if target.max_level:
+        return '{target.level}/{target.max_level}'.format(target=target)
+    else:
+        return target.level
 
 # Buy hero display instance
 

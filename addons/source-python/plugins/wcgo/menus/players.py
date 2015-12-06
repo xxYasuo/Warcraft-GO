@@ -12,11 +12,14 @@ from wcgo.player import Player
 from wcgo.player import PlayerIter
 
 
-def _level_info(entity):
-    """Return the level info string from an entity."""
-    if entity.is_max_level():
+def _level_info(target):
+    if target.is_max_level():
         return 'Maxed'
-    return '{entity.level}/{entity.max_level}'.format(entity=entity)
+
+    if target.max_level:
+        return '{target.level}/{target.max_level}'.format(target=target)
+    else:
+        return target.level
 
 
 # Player list menu instance
