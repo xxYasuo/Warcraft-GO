@@ -15,6 +15,8 @@ from entities.hooks import EntityPreHook
 from entities.hooks import EntityCondition
 from events import Event
 from memory import make_object
+from path import Path
+from paths import PLUGIN_DATA_PATH
 from weapons.entity import Weapon
 
 # Warcraft: GO
@@ -32,6 +34,7 @@ import wcgo.utilities
 
 # Globals
 database = None
+_DATABASE_PATH = PLUGIN_DATA_PATH / 'wcgo.db'
 
 
 def player_from_event(event, key):
@@ -60,7 +63,7 @@ def load():
 
     # Initialize the database and restart the game
     global database
-    database = wcgo.database.Database(cfg.database_path)
+    database = wcgo.database.Database(_DATABASE_PATH)
     for player in wcgo.player.PlayerIter():
         _init_player(player)
 

@@ -80,5 +80,3 @@ required_xp_base = 100
 # This value gets added to required XP for every level
 required_xp_addition = 20
 
-# Path to database file (don't edit if unsure of what it does)
-database_path = os.path.join(os.path.dirname(__file__), 'wcgo.db')
