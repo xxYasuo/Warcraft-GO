@@ -100,7 +100,10 @@ class Burn_Until_Hit(Skill):
 
     def player_victim(self, player, **eargs):
         for burn in self._burns.values():
-            burn.cancel()
+            try:
+                burn.cancel()
+            except ValueError:  # If the person has died or disconnected
+                continue
         self._burns.clear()
         self._msg_hit.send(player.index)
 
