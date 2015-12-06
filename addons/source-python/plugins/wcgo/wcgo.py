@@ -141,7 +141,8 @@ def _execute_spawn_message(event):
         player = player_from_event(event, 'userid')
         if player.steamid == 'BOT' and player.hero is None:
             return  # Bots sometimes spawn before their data is loaded
-        wcgo.strings.chat_message(player.index, 'Show XP', hero=player.hero)
+        xp_info = '{0}/{1}'.format(player.hero.xp, player.hero.required_xp) if player.hero.required_xp else player.hero.xp
+        wcgo.strings.chat_message(player.index, 'Show XP', hero=player.hero, xp=xp_info)
 
 
 # Say command and client command decorations
