@@ -61,8 +61,8 @@ class Longjump(Skill):
 class Burst_of_Speed(Skill):
     "On ultimate you gain massive speed."
     max_level = 8
-    _msg = '>> \x04Burst of Speed: \x03You gained {speed}% more speed.'
-    _cd_msg = '>> \x04Burst of Speed: \x09Your cooldown is {remaining_cd} more seconds!'
+    _msg = '>> \x04Burst of Speed: \x03You gained {speed}% more speed for 3 seconds.'
+    _cd_msg = '>> \x04Burst of Speed: \x09Your cooldown is {remaining_cd:0.0f} more seconds!'
 
     @cooldown(10, message=_cd_msg)
     def player_ultimate(self, player, **eargs):
@@ -148,7 +148,7 @@ class Movement_Speed_Stack(Skill):
     def _cooldownf(self, **eargs):
         return 2 + self._stack * 10
 
-    _cd_msg = 'You have to keep running for {remaining_cd} more seconds!'
+    _cd_msg = '>> \x04Speed Stack: \x03You have to keep running for {remaining_cd:0.0f} more seconds!'
 
     @cooldownf(_cooldownf, message=_cd_msg)
     def player_ultimate(self, player, **eargs):
