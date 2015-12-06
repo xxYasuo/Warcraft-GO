@@ -29,7 +29,7 @@ def _item_sell_menu_select(menu, index, choice):
     player = Player(index)
     item = choice.value
     player.cash += item.sell_value
-    player.hero.execute_skills('item_sold', item=item, player=player)
+    item.execute_method('item_sold', item=item, player=player)
     player.hero.items.remove(item)
     strings.message(index, 'Sell Item Success', item=item.name, cost=item.sell_value)
 
@@ -57,8 +57,9 @@ def _item_buy_menu_select(menu, index, choice):
     player = Player(index)
     item = choice.value
     if player.cash >= item.cost:
-        player.hero.items.append(item())
-        player.hero.execute_skills('item_purchased', item=item, player=player)
+        item = item()
+        player.hero.items.append(item)
+        item.execute_method('item_purchased', item=item, player=player)
         player.cash -= item.cost
         strings.message(index, 'Buy Item Success', item=item.name, cost=item.cost)
     else:
