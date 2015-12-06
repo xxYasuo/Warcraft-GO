@@ -9,14 +9,15 @@ from translations.strings import LangStrings
 from wcgo.info import info
 
 
-EXPERIENCE_MESSAGES = LangStrings(info.basename + '/experience_strings')
+MISC_MESSAGES = LangStrings(info.basename + '/misc')
+XP_MESSAGES = LangStrings(info.basename + '/xp')
 
 
 def chat_message(player_index, msg_id, **kwargs):
     """Send a message to a player using SayText2."""
-    SayText2(EXPERIENCE_MESSAGES[msg_id]).send(player_index, **kwargs)
+    SayText2(MISC_MESSAGES[msg_id]).send(player_index, **kwargs)
 
 
 def hint_message(player_index, msg_id, **kwargs):
     """Send a message to a player using HintText."""
-    HintText(EXPERIENCE_MESSAGES[msg_id]).send(player_index, **kwargs)
+    HintText(XP_MESSAGES[msg_id]).send(player_index, **kwargs)

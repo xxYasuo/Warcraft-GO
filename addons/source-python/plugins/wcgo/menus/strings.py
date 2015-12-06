@@ -17,7 +17,7 @@ BACK = 'Back'
 NEXT = 'Next'
 CLOSE = 'Close'
 
-MENU_MESSAGES = LangStrings(info.basename + '/menu_strings')
+MENU_MESSAGES = LangStrings(info.basename + '/menus')
 
 MAIN_MENU = {
     'Title': 'Warcraft (Main Menu)',
