@@ -6,20 +6,17 @@ from messages import HintText
 from translations.strings import LangStrings
 
 # Warcraft: GO
-import wcgo.configs as cfg
 from wcgo.info import info
 
 
-MESSAGES = LangStrings(info.basename)
+EXPERIENCE_MESSAGES = LangStrings(info.basename + '/experience_strings')
 
 
 def chat_message(player_index, msg_id, **kwargs):
     """Send a message to a player using SayText2."""
-    msg = MESSAGES[msg_id]
-    SayText2(msg).send(player_index, **kwargs)
+    SayText2(EXPERIENCE_MESSAGES[msg_id]).send(player_index, **kwargs)
 
 
 def hint_message(player_index, msg_id, **kwargs):
     """Send a message to a player using HintText."""
-    msg = MESSAGES[msg_id]
-    HintText(msg).send(player_index, **kwargs)
+    HintText(EXPERIENCE_MESSAGES[msg_id]).send(player_index, **kwargs)

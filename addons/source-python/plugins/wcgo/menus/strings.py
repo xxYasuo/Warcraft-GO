@@ -2,32 +2,22 @@
 
 # Source.Python
 from messages import SayText2
+from translations.strings import LangStrings
 
 # Warcraft: GO
-from wcgo.configs import message_template
+from wcgo.info import info
 
 
-def message(index, msg_id, **kwargs):
+def message(player_index, msg_id, **kwargs):
     """Send a message to a player."""
-    message = MESSAGES[msg_id].format(**kwargs)
-    SayText2(message_template.format(message)).send(index)
+    SayText2(MENU_MESSAGES[msg_id]).send(player_index, **kwargs)
 
 SEPARATOR = ' '
 BACK = 'Back'
 NEXT = 'Next'
 CLOSE = 'Close'
 
-MESSAGES = {
-    'Change Hero Success': '\x01Changed hero to \x05{hero}\x01.',
-    'Change Hero Failed': '\x01Cannot change hero to \x05{hero}\x01.',
-    'Buy Hero Success': '\x01Purchased \x05{hero} \x01for \x07{cost} gold\x01.',
-    'Buy Hero Failed': '\x01Cannot purchase \x05{hero} \x01for \x07{cost} gold\x01.',
-    'Reset Skills Success': '\x01Reset your \x05current skills \x04to 0.',
-    'Reset Skills Failed': '\x01Resetting your \x04skills \x01costs \x07{cost} gold\x01.',
-    'Buy Item Success': '\x01Purchased \x05{item} \x01for \x07${cost}\x01.',
-    'Buy Item Failed': '\x01Cannot purchase \x05{item} \x01for \x07${cost}\x01.',
-    'Sell Item Success': '\x01Sold \x05{item} \x01for \x07${cost}\x01.',
-}
+MENU_MESSAGES = LangStrings(info.basename + '/menu_strings')
 
 MAIN_MENU = {
     'Title': 'Warcraft (Main Menu)',

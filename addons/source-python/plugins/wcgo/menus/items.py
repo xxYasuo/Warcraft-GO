@@ -31,7 +31,7 @@ def _item_sell_menu_select(menu, index, choice):
     player.cash += item.sell_value
     item.execute_method('item_sell', item=item, player=player)
     player.hero.items.remove(item)
-    strings.message(index, 'Sell Item Success', item=item.name, cost=item.sell_value)
+    strings.message(index, 'Sell Item Success', item=item)
 
 
 item_sell_menu = PagedMenu(
@@ -61,9 +61,9 @@ def _item_buy_menu_select(menu, index, choice):
         player.hero.items.append(item)
         item.execute_method('item_purchase', item=item, player=player)
         player.cash -= item.cost
-        strings.message(index, 'Buy Item Success', item=item.name, cost=item.cost)
+        strings.message(index, 'Buy Item Success', item=item)
     else:
-        strings.message(index, 'Buy Item Failed', item=item.name, cost=item.cost)
+        strings.message(index, 'Buy Item Failed', item=item)
     return item_categories_menu
 
 

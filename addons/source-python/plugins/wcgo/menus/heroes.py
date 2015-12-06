@@ -64,11 +64,9 @@ def _buy_hero_menu_select(menu, index, choice):
     elif hero_cls.cost <= player.gold:
         player.heroes[hero_cls.clsid] = hero_cls(owner=player)
         player.gold -= hero_cls.cost
-        strings.message(
-            index, 'Buy Hero Success', hero=hero_cls.name, cost=hero_cls.cost)
+        strings.message(index, 'Buy Hero Success', hero=hero_cls)
     else:
-        strings.message(
-            index, 'Buy Hero Failed', hero=hero_cls.name, cost=hero_cls.cost)
+        strings.message(index, 'Buy Hero Failed', hero=hero_cls)
 
 
 buy_hero_menu = PagedMenu(
@@ -166,10 +164,10 @@ def _owned_hero_menu_select(menu, index, choice):
     if hero is None:
         return menu
     elif player.hero.clsid != hero.clsid:
-        strings.message(index, 'Change Hero Success', hero=hero.name, cost=hero.cost)
+        strings.message(index, 'Change Hero Success', hero=hero.name)
         player.hero = choice.value
     else:
-        strings.message(index, 'Change Hero Failed', hero=hero.name, cost=hero.cost)
+        strings.message(index, 'Change Hero Failed', hero=hero.name)
 
 
 owned_hero_menu = PagedMenu(
