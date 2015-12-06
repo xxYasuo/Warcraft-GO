@@ -22,7 +22,7 @@ def _level_info(target):
     return '{target.level}/{target.max_level}'.format(target=target)
 
 
-# Buy hero display instance.
+# Buy hero display instance
 
 def _buy_hero_menu_build(menu, index):
     player = Player(index)
@@ -34,8 +34,9 @@ def _buy_hero_menu_build(menu, index):
     menu.description = strings.BUY_HERO_MENU['Description'].format(
         description=hero.description)
     can_use = player.gold >= hero.cost
-    menu.constants = {6: menus.PagedOption(strings.BUY_HERO_MENU['Buy'], hero,
-        highlight=can_use, selectable=can_use)}
+    buy_option = menus.PagedOption(
+        strings.BUY_HERO_MENU['Buy'], hero, highlight=can_use, selectable=can_use)
+    menu.constants = {6: buy_option}
     menu.clear()
 
     for passive in hero.passives:
@@ -65,7 +66,7 @@ def _buy_hero_menu_select(menu, index, choice):
     else:
         strings.message(index, 'Buy Hero Failed', hero=hero.name, cost=hero.cost)
 
-        
+
 buy_hero_menu = PagedMenu(
     build_callback=_buy_hero_menu_build,
     select_callback=_buy_hero_menu_select)
@@ -102,7 +103,7 @@ def _buy_categories_menu_build(menu, index):
     categories = collections.defaultdict(list)
     heroes = wcgo.entities.Hero.get_subclass_dict()
     for hero in heroes:
-        if not hero in player.heroes:
+        if hero not in player.heroes:
             categories[heroes[hero].category].append(heroes[hero])
 
     menu.clear()
@@ -159,14 +160,14 @@ def _owned_hero_menu_build(menu, index):
 def _owned_hero_menu_select(menu, index, choice):
     player = Player(index)
     hero = choice.value
-    if hero == None:
+    if hero is None:
         return menu
     elif player.hero.clsid != hero.clsid:
         strings.message(index, 'Change Hero Success', hero=hero.name, cost=hero.cost)
         player.hero = choice.value
     else:
         strings.message(index, 'Change Hero Failed', hero=hero.name, cost=hero.cost)
-        
+
 
 owned_hero_menu = PagedMenu(
     build_callback=_owned_hero_menu_build,
@@ -248,7 +249,8 @@ def _current_hero_menu_build(menu, index):
         # Append the skill in iteration to the menu
         can_use = not skill.is_max_level() and player.hero.skill_points >= skill.cost
         option = menus.PagedOption(
-            strings.CURRENT_HERO_MENU['Skill'].format(skill=skill.name, levelinfo=_level_info(skill)),
+            strings.CURRENT_HERO_MENU['Skill'].format(
+                skill=skill.name, levelinfo=_level_info(skill)),
             skill,
             highlight=can_use,
             selectable=can_use)
