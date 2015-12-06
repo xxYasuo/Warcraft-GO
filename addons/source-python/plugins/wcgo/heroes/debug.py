@@ -36,7 +36,7 @@ class Lifesteal(Skill):
     max_level = 8
     _msg = '>> \x04Lifesteal: \x02Stole {health} health from enemy'
 
-    def player_pre_attack(self, player, info, **eargs):
+    def player_pre_attack(self, player, victim, info, **eargs):
         if player.team == victim.team:
             return
         chance = 20 + (5 * self.level)
@@ -62,8 +62,9 @@ class Burst_of_Speed(Skill):
     "On ultimate you gain massive speed."
     max_level = 8
     _msg = '>> \x04Burst of Speed: \x03You gained {speed}% more speed.'
+    _cd_msg = '>> \x04Burst of Speed: \x09Your cooldown is {remaining_cd} more seconds!'
 
-    @cooldown(10)
+    @cooldown(10, message=_cd_msg)
     def player_ultimate(self, player, **eargs):
         speed = 0.1 * self.level * player.speed
         player.shift_property('speed', speed, 3)
