@@ -4,7 +4,8 @@
 import menus
 
 # Warcraft: GO
-from wcgo.menus import strings
+import wcgo.configs
+import wcgo.strings
 
 
 class PagedMenu(menus.PagedMenu):
@@ -20,15 +21,15 @@ class PagedMenu(menus.PagedMenu):
     def __init__(
             self, data=None, select_callback=None, build_callback=None,
             description=None, title=None,
-            top_seperator=strings.SEPARATOR, bottom_seperator=strings.SEPARATOR, fill=False,
-            constants=None, previous_menu=None, next_menu=None,
+            top_seperator=wcgo.configs.menu_separator,
+            bottom_seperator=wcgo.configs.menu_separator,
+            fill=False, constants=None, previous_menu=None, next_menu=None,
             display_page_info=False):
         """Initializes a new PagedMenu instance."""
         super().__init__(
             data, select_callback, build_callback,
-            description, title, top_seperator, bottom_seperator, fill
-        )
-        self.constants = constants or {}
+            description, title, top_seperator, bottom_seperator, fill)
+        self.constants = constants if constants is not None else {}
         self.previous_menu = previous_menu
         self.next_menu = next_menu
         self.display_page_info = display_page_info
@@ -120,7 +121,7 @@ class PagedMenu(menus.PagedMenu):
 
         # Add "Previous" option
         option_previous = menus.PagedOption(
-            strings.BACK,
+            wcgo.strings.menus['defaults']['Back'],
             self.previous_menu,
             highlight=False,
             selectable=False)
@@ -131,7 +132,7 @@ class PagedMenu(menus.PagedMenu):
 
         # Add "Next" option
         option_next = menus.PagedOption(
-            strings.NEXT,
+            wcgo.strings.menus['defaults']['Next'],
             self.next_menu,
             highlight=False,
             selectable=False)
@@ -142,7 +143,7 @@ class PagedMenu(menus.PagedMenu):
 
         # Add "Close" option
         option_close = menus.PagedOption(
-            strings.CLOSE,
+            wcgo.strings.menus['defaults']['Close'],
             highlight=False)
         buffer += option_close._render(player_index, 9)
         slots.add(9)

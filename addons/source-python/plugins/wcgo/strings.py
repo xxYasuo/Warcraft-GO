@@ -9,15 +9,17 @@ from translations.strings import LangStrings
 from wcgo.info import info
 
 
-MISC_MESSAGES = LangStrings(info.basename + '/misc_messages')
-XP_MESSAGES = LangStrings(info.basename + '/xp_messages')
+def _get_messages(translation_file, message_cls):
+    """Get a dict of messages from a translation file."""
+    lang_strings = LangStrings(info.basename + '/' + translation_file)
+    return {key: message_cls(value) for key, value in lang_strings.items()}
 
-
-def chat_message(player_index, msg_id, **kwargs):
-    """Send a message to a player using SayText2."""
-    SayText2(MISC_MESSAGES[msg_id]).send(player_index, **kwargs)
-
-
-def hint_message(player_index, msg_id, **kwargs):
-    """Send a message to a player using HintText."""
-    HintText(XP_MESSAGES[msg_id]).send(player_index, **kwargs)
+# Globals
+misc_messages = _get_messages('misc_messages', SayText2)
+xp_messages = _get_messages('xp_messages', HintText)
+menu_messages = _get_messages('menu_messages', SayText2)
+menus = {
+    name: LangStrings(info.basename + '/menus/' + name)
+    for name in ('defaults', 'main', 'current_hero', 'categories', 'item_sell',
+                 'buy_hero', 'owned_hero', 'player_list', 'player_info') 
+}

@@ -1,48 +1,48 @@
 ﻿"""Provides the player info menu instance."""
 
 # Source.Python
-import menus
+from menus import PagedOption
 
 # Warcraft: GO
-import wcgo.configs as cfg
 import wcgo.entities
+import wcgo.player
+import wcgo.strings
 from wcgo.menus.extensions import PagedMenu
-from wcgo.menus import strings
-from wcgo.player import Player
-from wcgo.player import PlayerIter
 
 
-def _level_info(target):
-    if target.is_max_level():
+def _level_info(entity):
+    """Get entity's level information as a string."""
+    if entity.is_max_level():
         return 'Maxed'
+    if entity.max_level is not None:
+        return '{entity.level}/{entity.max_level}'.format(entity=entity)
+    return entity.level
 
-    if target.max_level:
-        return '{target.level}/{target.max_level}'.format(target=target)
-    else:
-        return target.level
+
+# Translations for menus
+_tr = wcgo.strings.menus
 
 
 # Player list menu instance
 
 def _player_list_menu_build(menu, index):
     menu.clear()
-    for player in PlayerIter():
-        option = menus.PagedOption(strings.PLAYER_LIST_MENU['Player'].format(
-            name=player.name), player)
+    for player in wcgo.player.PlayerIter():
+        option = PagedOption(
+            _tr['player_list']['Player'].get_string(name=player.name), player)
         menu.append(option)
 
 
 def _player_list_menu_select(menu, index, choice):
     player = choice.value
-    player_info_menu.title = strings.PLAYER_INFO_MENU['Title'].format(
-        name=player.name)
+    player_info_menu.title = _tr['player_info']['Title'].get_string(name=player.name)
     player_info_menu.target = player
     player_info_menu.previous_menu = menu
     return player_info_menu
 
 
 player_list_menu = PagedMenu(
-    title=strings.PLAYER_LIST_MENU['Title'],
+    title=_tr['player_list']['Title'],
     build_callback=_player_list_menu_build,
     select_callback=_player_list_menu_select)
 
@@ -53,19 +53,17 @@ def _player_info_menu_build(menu, index):
     player = menu.target
     hero = player.hero
 
-    menu.description = strings.PLAYER_INFO_MENU['Description'].format(
+    menu.description = _tr['player_info']['Description'].get_string(
         hero=hero.name, levelinfo=_level_info(hero))
     menu.clear()
 
     for skill in hero.skills:
-        # Append the skill in iteration to the menu
-        option = strings.PLAYER_INFO_MENU['Skill'].format(skill=skill.name, levelinfo=_level_info(skill))
+        option = _tr['player_info']['Skill'].get_string(
+            skill=skill.name, levelinfo=_level_info(skill))
         menu.append(option)
 
     lines_to_fill = 6 - len(hero.skills)
-    while lines_to_fill > 1:
-        menu.append(' \n')
-        lines_to_fill -= 1
+    menu.extend([' \n'] * lines_to_fill)
 
 
 def _player_info_menu_select(menu, index, choice):
