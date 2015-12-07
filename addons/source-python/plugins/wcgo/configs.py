@@ -6,6 +6,18 @@ admins = (
     'STEAM_1:0:120220385',  # Predz
 )
 
+# Amounts of gold gained from objectives
+gold_values = {
+
+    # Kill values
+    'Kill': 2,
+    'Assist': 1,
+
+    # Round values
+    'Round Win': 3,
+    'Round Loss': 2
+}
+
 # Amounts of experience points to gain from objectives
 exp_values = {
 
@@ -36,17 +48,11 @@ exp_values = {
 # Multiplier for experience points gained upon events
 exp_multiplier = 1.0
 
-# Amounts of gold gained from objectives
-gold_values = {
+# Base value for the experience points required to level up 
+required_xp_base = 100
 
-    # Kill values
-    'Kill': 2,
-    'Assist': 1,
-
-    # Round values
-    'Round Win': 3,
-    'Round Loss': 2
-}
+# This value gets added to required XP for every level
+required_xp_addition = 20
 
 # How much gold does it cost to reset hero's skills
 reset_skills_cost = 50
@@ -56,18 +62,14 @@ starting_heroes = (
     'Predz_Debug_Hero',
 )
 
+# Items' default sell value's multiplier
+item_sell_value_multiplier = 0.5
+
+# Menu separator
+menu_separator = ' '
+
 # Hero category to use when no category is defined
 default_hero_category = 'Others'
 
 # Item category to use when no category is defined
 default_item_category = 'Others'
-
-# Items' default sell value's multiplier
-item_sell_value_multiplier = 0.5
-
-# Base value for the experience points required to level up 
-required_xp_base = 100
-
-# This value gets added to required XP for every level
-required_xp_addition = 20
-
