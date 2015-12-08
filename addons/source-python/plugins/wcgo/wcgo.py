@@ -178,7 +178,7 @@ def _ultimate_say_command(command, index, team=None):
     if player.team in (2, 3) and player.isdead is False:
         player.hero.execute_skills('player_ultimate', player=player)
     else:
-        wcgo.strings.chat_message(index, 'Ultimate Failed')
+        wcgo.strings.misc_messages['Ultimate Failed'].send(index)
     return CommandReturn.BLOCK
 
 
