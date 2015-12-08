@@ -3,9 +3,10 @@
 # Source.Python
 import entities
 
-# Entity subclass
-class Entity(entities.entity.Entity):
 
+class Entity(entities.entity.Entity):
+    '''Subclassing Entity to ensure input and outputs
+    are never called when entity doesn't exist.'''
     def __init__(self, index):
         super().__init__(index)
         self._ehandle = self.get_ref_ehandle()
