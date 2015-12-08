@@ -175,7 +175,10 @@ def _showxp_say_command(command, index, team=None):
 @SayCommand('ultimate')
 def _ultimate_say_command(command, index, team=None):
     player = wcgo.player.Player(index)
-    player.hero.execute_skills('player_ultimate', player=player)
+    if player.team in (2, 3) and player.isdead is False:
+        player.hero.execute_skills('player_ultimate', player=player)
+    else:
+        wcgo.strings.chat_message(index, 'Ultimate Failed')
     return CommandReturn.BLOCK
 
 
