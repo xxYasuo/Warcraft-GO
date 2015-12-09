@@ -10,7 +10,7 @@ class Entity(entities.entity.Entity):
     def __init__(self, index):
         """Initialize a new entity and store his ehandle."""
         super().__init__(index)
-        self._ehandle = self.get_ref_ehandle()
+        self._ehandle = self.basehandle
 
     def is_valid(self):
         """Use the ehandle to see if the entity is still valid."""
