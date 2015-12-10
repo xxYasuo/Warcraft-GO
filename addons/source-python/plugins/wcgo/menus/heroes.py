@@ -76,7 +76,6 @@ def _buy_heroes_menu_select(menu, index, choice):
 
 
 buy_heroes_menu = PagedMenu(
-    title=menu_options['Buy Heroes'],
     build_callback=_buy_heroes_menu_build,
     select_callback=_buy_heroes_menu_select)
 
@@ -106,6 +105,7 @@ def _buy_categories_menu_select(menu, index, choice):
 
 
 buy_categories_menu = PagedMenu(
+    title=menu_options['Buy Heroes'],
     build_callback=_buy_categories_menu_build,
     select_callback=_buy_categories_menu_select)
 
@@ -165,7 +165,6 @@ def _owned_heroes_menu_select(menu, index, choice):
 
 
 owned_heroes_menu = PagedMenu(
-    title=menu_options['Owned Heroes'],
     build_callback=_owned_heroes_menu_build,
     select_callback=_owned_heroes_menu_select)
 
@@ -194,6 +193,7 @@ def _owned_categories_menu_select(menu, index, choice):
 
 
 owned_categories_menu = PagedMenu(
+    title=menu_options['Owned Heroes'],
     build_callback=_owned_categories_menu_build,
     select_callback=_owned_categories_menu_select)
 
@@ -216,7 +216,7 @@ def _current_hero_menu_build(menu, index):
 
     text = '{skill.name} ({skill.level_info})'
     for skill in hero.skills:
-        can_use = not skill.is_max_level() and player.hero.skill_points >= skill.cost
+        can_use = not skill.is_max_level() and hero.skill_points >= skill.cost
         option = PagedOption(
             text.format(skill=skill),
             skill,
