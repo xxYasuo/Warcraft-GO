@@ -135,7 +135,7 @@ class Enrage(Skill):
 class Movement_Speed_Stack(Skill):
     "Gain movement speed on attack, release on ultimate."
     max_level = 3
-    _msg_cd = SayText2('>> \x04Speed Stack: \x03You have to keep running for {remaining_cd:0.0f} more seconds!')
+    _cd_msg = SayText2('>> \x04Speed Stack: \x03You have to keep running for {remaining_cd:0.0f} more seconds!')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
