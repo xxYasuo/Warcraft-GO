@@ -69,6 +69,13 @@ class _LevelableEntity(_Entity):
         """Return True if the entity's level is maxed out."""
         return self.max_level is not None and self.level >= self.max_level
 
+    @property
+    def level_info(self):
+        """Get the entity's level info as a string."""
+        if self.max_level is None:
+            return str(self.level)
+        return '{entity.level}/{entity.max_level}'.format(entity=self)
+
 
 class Hero(_LevelableEntity):
     """Character with unique skills to spice up the game."""
@@ -142,6 +149,13 @@ class Hero(_LevelableEntity):
         """Get the amount of hero's unused skill points."""
         used_points = sum(skill.level * skill.cost for skill in self.skills)
         return self.level - used_points
+
+    @property
+    def xp_info(self):
+        """Get the hero's XP info as a string."""
+        if self.is_max_level():
+            return str(self.xp)
+        return '{hero.xp}/{hero.required_xp}'.format(hero=self)
 
     @classmethod
     def passive(cls, passive_cls):
