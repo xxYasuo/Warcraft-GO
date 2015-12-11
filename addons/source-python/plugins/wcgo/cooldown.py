@@ -1,4 +1,4 @@
-﻿"""This module contains cooldown decorators."""
+"""This module contains cooldown decorators."""
 
 # Python 3
 import time
@@ -14,8 +14,6 @@ class UnboundCooldownMethod:
         """Initialize a new unbound cooldown method."""
         self._func = func
         self._cdkey = cdkey  # `duration` or `cd_func` based on `bound_type`
-        if isinstance(message, str):
-            message = SayText2(message)
         self.message = message
         self._bound_type = bound_type
         self._bindings = {}
@@ -82,11 +80,11 @@ class _BoundCooldownMethod:
     def _send_message(self, player_index):
         """Send the message to a player."""
         if self.message is not None:
-            self.message.send(
-                player_index, 
+            message = self.message.format(
                 skill_name=self._skill.name,
                 remaining_cd=self.remaining_cooldown,
                 maximum_cd=self.cooldown)
+            SayText2(message).send(player_index)
 
 
 class StaticCooldownMethod(_BoundCooldownMethod):
