@@ -33,8 +33,12 @@ def _buy_hero_menu_build(menu, index):
     for passive_cls in hero_cls._passive_classes:
         menu.append(text.format(passive=passive_cls))
 
-    text = '{skill.name} ({skill.max_level})\n{skill.description}'
+    base_text = '{skill.name}{{max_level}}\n{skill.description}'
     for skill_cls in hero_cls._skill_classes:
+        if skill_cls.max_level is None:
+            text = base_text.format(max_level='')
+        else:
+            text = base_text.format(max_level=' ({skill.max_level})')
         option = PagedOption(text.format(skill=skill_cls))
         menu.append(option)
 
