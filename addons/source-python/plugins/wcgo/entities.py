@@ -76,7 +76,7 @@ class Hero(_LevelableEntity):
     _passive_classes = tuple()
     _skill_classes = tuple()
     restricted_items = tuple()
-    category = cfg.default_hero_category
+    category = cfg.default_hero_category.get_string()
     e_level_up = wcgo.event.Event()
 
     def __init__(self, owner=None, level=0, xp=0):
@@ -135,7 +135,8 @@ class Hero(_LevelableEntity):
         """Get the required XP for the hero to level up."""
         if self.is_max_level():
             return None
-        return cfg.required_xp_base + cfg.required_xp_addition * self.level
+        return (cfg.required_xp_base.get_int() +
+            cfg.required_xp_addition.get_int() * self.level)
 
     @property
     def skill_points(self):
@@ -184,7 +185,7 @@ class Item(_Entity):
 
     stay_after_death = False
     limit = 1
-    category = cfg.default_item_category
+    category = cfg.default_item_category.get_string()
 
     def execute_method(self, name, **eargs):
         """Executes the items's method with matching name."""
@@ -195,4 +196,4 @@ class Item(_Entity):
     @property
     def sell_value(self):
         """Get the item's sell value."""
-        return round(self.cost * cfg.item_sell_value_multiplier)
+        return round(self.cost * cfg.item_sell_value_multiplier.get_float())
