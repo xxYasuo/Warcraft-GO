@@ -33,7 +33,7 @@ def _buy_hero_menu_build(menu, index):
     for passive_cls in hero_cls._passive_classes:
         menu.append(text.format(passive=passive_cls))
 
-    base_text = '{skill.name}{{max_level}}\n{skill.description}'
+    base_text = '{{skill.name}}{max_level}\n{{skill.description}}'
     for skill_cls in hero_cls._skill_classes:
         if skill_cls.max_level is None:
             text = base_text.format(max_level='')
@@ -142,10 +142,10 @@ def _owned_hero_menu_select(menu, index, choice):
     if hero is None:
         return menu
     elif player.hero.clsid != hero.clsid:
-        menu_messages['Change Hero Success'].send(index, hero=hero.name)
+        menu_messages['Change Hero Success'].send(index, hero=hero)
         player.hero = choice.value
     else:
-        menu_messages['Change Hero Failed'].send(index, hero=hero.name)
+        menu_messages['Change Hero Failed'].send(index, hero=hero)
 
 
 owned_hero_menu = PagedMenu(
