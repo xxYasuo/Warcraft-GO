@@ -5,7 +5,7 @@ import menus
 
 # Warcraft: GO
 import wcgo.configs
-import wcgo.strings
+from wcgo.strings import menu_options
 
 
 class PagedMenu(menus.PagedMenu):
@@ -123,7 +123,7 @@ class PagedMenu(menus.PagedMenu):
 
         # Add "Previous" option
         option_previous = menus.PagedOption(
-            wcgo.strings.menus['defaults']['Back'],
+            menu_options['Back'],
             self.previous_menu,
             highlight=False,
             selectable=False)
@@ -134,7 +134,7 @@ class PagedMenu(menus.PagedMenu):
 
         # Add "Next" option
         option_next = menus.PagedOption(
-            wcgo.strings.menus['defaults']['Next'],
+            menu_options['Next'],
             self.next_menu,
             highlight=False,
             selectable=False)
@@ -145,7 +145,7 @@ class PagedMenu(menus.PagedMenu):
 
         # Add "Close" option
         option_close = menus.PagedOption(
-            wcgo.strings.menus['defaults']['Close'],
+            menu_options['Close'],
             highlight=False)
         buffer += option_close._render(player_index, 9)
         slots.add(9)

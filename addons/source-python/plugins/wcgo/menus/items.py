@@ -9,12 +9,9 @@ from menus import PagedOption
 # Warcraft: GO
 import wcgo.entities
 import wcgo.player
-import wcgo.strings
 from wcgo.menus.extensions import PagedMenu
-
-
-# Translations for menus
-_tr = wcgo.strings.menus
+from wcgo.strings import menu_messages
+from wcgo.strings import menu_options
 
 
 # Sell items selection menu instance
@@ -22,10 +19,9 @@ _tr = wcgo.strings.menus
 def _item_sell_menu_build(menu, index):
     player = wcgo.player.Player(index)
     menu.clear()
+    text = '{item.name} ({item.sell_value})'
     for item in player.hero.items:
-        option = PagedOption(_tr['categories']['Entity'].get_string(
-            entity=item.name, cost='${0}'.format(item.sell_value)),
-            item)
+        option = PagedOption(text.format(item=item), item)
         menu.append(option)
 
 
@@ -35,11 +31,11 @@ def _item_sell_menu_select(menu, index, choice):
     player.cash += item.sell_value
     item.execute_method('item_sell', item=item, player=player)
     player.hero.items.remove(item)
-    wcgo.strings.menu_messages['Sell Item Success'].send(index, item=item)
+    menu_messages['Sell Item Success'].send(index, item=item)
 
 
 item_sell_menu = PagedMenu(
-    title=_tr['item_sell']['Title'],
+    title=menu_options['Sell Items'],
     build_callback=_item_sell_menu_build,
     select_callback=_item_sell_menu_select)
 
@@ -49,11 +45,10 @@ item_sell_menu = PagedMenu(
 def _item_buy_menu_build(menu, index):
     player = wcgo.player.Player(index)
     menu.clear()
+    text = '{item.name} ({item.cost})'
     for item in menu.items:
         highlight = player.cash >= item.cost
-        option = PagedOption(_tr['categories']['Entity'].get_string(
-            entity=item.name, cost='${0}'.format(item.cost)),
-            item, highlight=highlight)
+        option = PagedOption(text.format(item=item), item, highlight=highlight)
         menu.append(option)
 
 
@@ -65,9 +60,9 @@ def _item_buy_menu_select(menu, index, choice):
         player.hero.items.append(item)
         item.execute_method('item_purchase', item=item, player=player)
         player.cash -= item.cost
-        wcgo.strings.menu_messages['Buy Item Success'].send(index, item=item)
+        menu_messages['Buy Item Success'].send(index, item=item)
     else:
-        wcgo.strings.menu_messages['Buy Item Failed'].send(index, item=item)
+        menu_messages['Buy Item Failed'].send(index, item=item)
     return item_categories_menu
 
 
@@ -82,7 +77,6 @@ def _item_categories_menu_build(menu, index):
     player = wcgo.player.Player(index)
     menu.clear()
 
-    # Retrieve all items available for player
     categories = collections.defaultdict(list)
     item_classes = wcgo.entities.Item.get_subclass_dict()
     item_counter = collections.Counter(item.clsid for item in player.hero.items)
@@ -90,21 +84,19 @@ def _item_categories_menu_build(menu, index):
         if item_counter[clsid] < item_cls.limit:
             categories[item_cls.category].append(item_cls)
 
-    # Construct menu from categories
-    for category in categories:
-        option = PagedOption(category, (category, categories[category]))
+    for category, items in categories.items():
+        option = PagedOption(category, (category, items))
         menu.append(option)
 
 
 def _item_categories_menu_select(menu, index, choice):
     category, items = choice.value
     item_buy_menu.items = items
-    item_buy_menu.title = _tr['categories']['Title'].get_string(category=category)
+    item_buy_menu.title = category
     item_buy_menu.previous_menu = menu
     return item_buy_menu
 
 
 item_categories_menu = PagedMenu(
-    title=_tr['categories']['Title'],
     build_callback=_item_categories_menu_build,
     select_callback=_item_categories_menu_select)

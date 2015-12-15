@@ -64,6 +64,9 @@ class Burst_of_Speed(Skill):
     _msg = '>> \x04Burst of Speed: \x03You gained {speed}% more speed for 3 seconds.'
     _cd_msg = '>> \x04Burst of Speed: \x09Your cooldown is {remaining_cd:0.0f} more seconds!'
 
+    def round_start(self, player, **eargs):
+        self.player_ultimate.remaining_cooldown = 0
+
     @cooldown(10, message=_cd_msg)
     def player_ultimate(self, player, **eargs):
         speed = 0.1 * self.level * player.speed
@@ -132,6 +135,7 @@ class Enrage(Skill):
 class Movement_Speed_Stack(Skill):
     "Gain movement speed on attack, release on ultimate."
     max_level = 3
+    _cd_msg = '>> \x04Speed Stack: \x03You have to keep running for {remaining_cd:0.0f} more seconds!'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -145,10 +149,11 @@ class Movement_Speed_Stack(Skill):
         player.speed += speed
         self._stack += speed
 
+    def round_start(self, player, **eargs):
+        self.player_ultimate.remaining_cooldown = 0
+
     def _cooldownf(self, **eargs):
         return 2 + self._stack * 10
-
-    _cd_msg = '>> \x04Speed Stack: \x03You have to keep running for {remaining_cd:0.0f} more seconds!'
 
     @cooldownf(_cooldownf, message=_cd_msg)
     def player_ultimate(self, player, **eargs):

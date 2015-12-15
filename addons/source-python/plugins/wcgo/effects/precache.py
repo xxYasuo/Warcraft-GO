@@ -1,11 +1,10 @@
 """Module which forces all items to return a Model instance."""
 
+# Source.Python
 from engines.precache import Model
 
-# Creating models dict. defaultdict will NOT work for this :)
+# Warcraft: GO
+import wcgo.utilities
 
-class _models(dict):
-	def __missing__(self, item):
-		self[item] = Model(item)
-		return self[item]
-models = _models()
+# Globals
+models = wcgo.utilities.KeyDefaultDict(Model)

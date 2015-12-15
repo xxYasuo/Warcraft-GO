@@ -10,21 +10,9 @@ from menus import PagedOption
 import wcgo.configs
 import wcgo.entities
 import wcgo.player
-import wcgo.strings
 from wcgo.menus.extensions import PagedMenu
-
-
-def _level_info(entity):
-    """Get entity's level information as a string."""
-    if entity.is_max_level():
-        return 'Maxed'
-    if entity.max_level is not None:
-        return '{entity.level}/{entity.max_level}'.format(entity=entity)
-    return entity.level
-
-
-# Translations for menus
-_tr = wcgo.strings.menus
+from wcgo.strings import menu_options
+from wcgo.strings import menu_messages
 
 
 # Buy hero display instance
@@ -32,29 +20,26 @@ _tr = wcgo.strings.menus
 def _buy_hero_menu_build(menu, index):
     player = wcgo.player.Player(index)
     hero_cls = menu.hero_cls
-
-    # Construct menu ready for addition of items
-    menu.title = _tr['buy_hero']['Title'].get_string(hero=hero_cls.name)
-    menu.description = _tr['buy_hero']['Description'].get_string(
-        description=hero_cls.description)
-    can_use = player.gold >= hero_cls.cost
-    buy_option = PagedOption(
-        _tr['buy_hero']['Buy'], hero_cls, highlight=can_use, selectable=can_use)
-    menu.constants = {6: buy_option}
     menu.clear()
 
-    for passive_cls in hero_cls._passive_classes:
-        menu.append(_tr['buy_hero']['Passive'].get_string(
-            passive=passive_cls.name, description=passive_cls.description))
+    menu.title = hero_cls.name
+    menu.description = hero_cls.description
+    can_use = player.gold >= hero_cls.cost
+    buy_option = PagedOption(
+        menu_options['Buy'], hero_cls, highlight=can_use, selectable=can_use)
+    menu.constants = {6: buy_option}
 
+    text = '{passive.name}\n{passive.description}'
+    for passive_cls in hero_cls._passive_classes:
+        menu.append(text.format(passive=passive_cls))
+
+    base_text = '{skill.name}{{max_level}}\n{skill.description}'
     for skill_cls in hero_cls._skill_classes:
-        # Append the skill in iteration to the menu
-        option = PagedOption(
-            _tr['buy_hero']['Skill'].get_string(
-                skill=skill_cls.name,
-                levelinfo='Levels: {0}'.format(skill_cls.max_level),
-                description=skill_cls.description),
-            None)
+        if skill_cls.max_level is None:
+            text = base_text.format(max_level='')
+        else:
+            text = base_text.format(max_level=' ({skill.max_level})')
+        option = PagedOption(text.format(skill=skill_cls))
         menu.append(option)
 
     menu.append(' \n')
@@ -68,9 +53,9 @@ def _buy_hero_menu_select(menu, index, choice):
     elif hero_cls.cost <= player.gold:
         player.heroes[hero_cls.clsid] = hero_cls(owner=player)
         player.gold -= hero_cls.cost
-        wcgo.strings.menu_messages['Buy Hero Success'].send(index, hero=hero_cls)
+        menu_messages['Buy Hero Success'].send(index, hero=hero_cls)
     else:
-        wcgo.strings.menu_messages['Buy Hero Failed'].send(index, hero=hero_cls)
+        menu_messages['Buy Hero Failed'].send(index, hero=hero_cls)
 
 
 buy_hero_menu = PagedMenu(
@@ -82,10 +67,9 @@ buy_hero_menu = PagedMenu(
 
 def _buy_heroes_menu_build(menu, index):
     menu.clear()
+    text = '{hero.name} ({hero.cost})'
     for hero_cls in menu.hero_classes:
-        option = PagedOption(_tr['categories']['Entity'].get_string(
-            entity=hero_cls.name, cost='{0} Gold'.format(hero_cls.cost)),
-            hero_cls)
+        option = PagedOption(text.format(hero=hero_cls), hero_cls)
         menu.append(option)
 
 
@@ -104,31 +88,28 @@ buy_heroes_menu = PagedMenu(
 
 def _buy_categories_menu_build(menu, index):
     player = wcgo.player.Player(index)
+    menu.clear()
 
-    # Retrieve all buyable heroes available for player
     categories = collections.defaultdict(list)
     hero_classes = wcgo.entities.Hero.get_subclass_dict()
     for clsid, hero_cls in hero_classes.items():
         if clsid not in player.heroes:
             categories[hero_cls.category].append(hero_cls)
 
-    menu.clear()
-
-    # Construct menu from categories
-    for category in categories:
-        option = PagedOption(category, (category, categories[category]))
+    for category, items in categories.items():
+        option = PagedOption(category, (category, items))
         menu.append(option)
 
 
 def _buy_categories_menu_select(menu, index, choice):
     category, buy_heroes_menu.hero_classes = choice.value
-    buy_heroes_menu.title = _tr['categories']['Title'].get_string(category=category)
+    buy_heroes_menu.title = category
     buy_heroes_menu.previous_menu = menu
     return buy_heroes_menu
 
 
 buy_categories_menu = PagedMenu(
-    title=_tr['categories']['Title'],
+    title=menu_options['Buy Heroes'],
     build_callback=_buy_categories_menu_build,
     select_callback=_buy_categories_menu_select)
 
@@ -137,24 +118,19 @@ buy_categories_menu = PagedMenu(
 
 def _owned_hero_menu_build(menu, index):
     hero = menu.hero
-
-    # Construct menu ready for addition of items
-    menu.title = _tr['owned_hero']['Title'].get_string(hero=hero.name)
-    menu.description = _tr['owned_hero']['Description'].get_string(
-        description=hero.description)
-    menu.constants = {6: PagedOption(_tr['owned_hero']['Change'], hero)}
     menu.clear()
 
-    for passive in hero.passives:
-        menu.append(_tr['owned_hero']['Passive'].get_string(
-            passive=passive.name, description=passive.description))
+    menu.title = hero.name
+    menu.description = hero.description
+    menu.constants = {6: PagedOption(menu_options['Change'], hero)}
 
+    text = '{passive.name}\n{passive.description}'
+    for passive in hero.passives:
+        menu.append(text.format(passive=passive))
+
+    text = '{skill.name} ({skill.level_info})\n{skill.description}'
     for skill in hero.skills:
-        # Append the skill in iteration to the menu
-        option = PagedOption(
-            _tr['owned_hero']['Skill'].get_string(
-                skill=skill.name, levelinfo=_level_info(skill), description=skill.description),
-            None)
+        option = PagedOption(text.format(skill=skill))
         menu.append(option)
 
     menu.append(' \n')
@@ -166,10 +142,10 @@ def _owned_hero_menu_select(menu, index, choice):
     if hero is None:
         return menu
     elif player.hero.clsid != hero.clsid:
-        wcgo.strings.menu_messages['Change Hero Success'].send(index, hero=hero.name)
+        menu_messages['Change Hero Success'].send(index, hero=hero.name)
         player.hero = choice.value
     else:
-        wcgo.strings.menu_messages['Change Hero Failed'].send(index, hero=hero.name)
+        menu_messages['Change Hero Failed'].send(index, hero=hero.name)
 
 
 owned_hero_menu = PagedMenu(
@@ -201,30 +177,27 @@ owned_heroes_menu = PagedMenu(
 
 def _owned_categories_menu_build(menu, index):
     player = wcgo.player.Player(index)
+    menu.clear()
 
-    # Retrieve all heroes available for player
     categories = collections.defaultdict(list)
     for hero in player.heroes.values():
         categories[hero.category].append(hero)
 
-    menu.clear()
-
-    # Construct menu from categories
-    for category in categories:
-        option = PagedOption(category, (category, categories[category]))
+    for category, items in categories.items():
+        option = PagedOption(category, (category, items))
         menu.append(option)
 
 
 def _owned_categories_menu_select(menu, index, choice):
     category, heroes = choice.value
     owned_heroes_menu.heroes = heroes
-    owned_heroes_menu.title = _tr['categories']['Title'].get_string(category=category)
+    owned_heroes_menu.title = category
     owned_heroes_menu.previous_menu = menu
     return owned_heroes_menu
 
 
 owned_categories_menu = PagedMenu(
-    title=_tr['categories']['Title'],
+    title=menu_options['Owned Heroes'],
     build_callback=_owned_categories_menu_build,
     select_callback=_owned_categories_menu_select)
 
@@ -234,35 +207,29 @@ owned_categories_menu = PagedMenu(
 def _current_hero_menu_build(menu, index):
     player = wcgo.player.Player(index)
     hero = player.hero
-
-    # Construct menu ready for addition of items
-    menu.title = _tr['current_hero']['Title']
-    menu.description = _tr['current_hero']['Description'].get_string(
-        hero=hero.name, levelinfo=_level_info(hero))
-    cost = wcgo.configs.reset_skills_cost.get_int()
-    can_use = player.gold >= cost
-    menu.constants = {6: PagedOption(
-                _tr['current_hero']['Reset'].get_string(gold=cost),
-                None,
-                highlight=can_use,
-                selectable=can_use)}
     menu.clear()
 
+    menu.title = menu_options['Current Hero']
+    menu.description = '{hero.name} ({hero.level_info})'.format(hero=hero)
+    can_use = player.gold >= wcgo.configs.reset_skills_cost.get_int()
+    menu.constants = {6: PagedOption(
+                menu_options['Reset Skills'].get_string(
+                    gold=wcgo.configs.reset_skills_cost.get_int()),
+                highlight=can_use,
+                selectable=can_use)}
+
+    text = '{skill.name} ({skill.level_info})'
     for skill in hero.skills:
-        # Append the skill in iteration to the menu
-        can_use = not skill.is_max_level() and player.hero.skill_points >= skill.cost
+        can_use = not skill.is_max_level() and hero.skill_points >= skill.cost
         option = PagedOption(
-            _tr['current_hero']['Skill'].get_string(
-                skill=skill.name, levelinfo=_level_info(skill)),
+            text.format(skill=skill),
             skill,
             highlight=can_use,
             selectable=can_use)
         menu.append(option)
 
     lines_to_fill = 6 - len(hero.skills)
-    while lines_to_fill > 1:
-        menu.append(' \n')
-        lines_to_fill -= 1
+    menu.extend([' \n'] * lines_to_fill)
 
 
 def _current_hero_menu_select(menu, index, choice):
@@ -271,7 +238,7 @@ def _current_hero_menu_select(menu, index, choice):
         for skill in player.hero.skills:
             skill.level = 0
         player.gold -= wcgo.configs.reset_skills_cost.get_int()
-        wcgo.strings.menu_messages['Reset Skills Success'].send(index)
+        menu_messages['Reset Skills Success'].send(index)
     else:
         skill = choice.value
         if (skill.cost <= player.hero.skill_points and
