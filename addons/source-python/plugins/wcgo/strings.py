@@ -18,8 +18,4 @@ def _get_messages(translation_file, message_cls):
 misc_messages = _get_messages('misc_messages', SayText2)
 xp_messages = _get_messages('xp_messages', HintText)
 menu_messages = _get_messages('menu_messages', SayText2)
-menus = {
-    name: LangStrings(info.basename + '/menus/' + name)
-    for name in ('defaults', 'main', 'current_hero', 'categories', 'item_sell',
-                 'buy_hero', 'owned_hero', 'player_list', 'player_info') 
-}
+menu_options = LangStrings(info.basename + '/menu_options')

@@ -141,11 +141,7 @@ def _execute_spawn_message(event):
         player = player_from_event(event, 'userid')
         if player.steamid == 'BOT' and player.hero is None:
             return  # Bots sometimes spawn before their data is loaded
-        if player.hero.required_xp is not None:
-            xp_info = '{0}/{1}'.format(player.hero.xp, player.hero.required_xp)
-        else:
-            xp_info = str(player.hero.xp)
-        wcgo.strings.misc_messages['Show XP'].send(player.index, hero=player.hero, xp=xp_info)
+        wcgo.strings.misc_messages['Hero Info'].send(player.index, hero=player.hero)
 
 
 # Say command and client command decorations
@@ -158,16 +154,12 @@ def _main_say_command(command, index, team=None):
     return CommandReturn.BLOCK
 
 
-@ClientCommand('showxp')
-@SayCommand('showxp')
+@ClientCommand(['showxp', 'heroinfo'])
+@SayCommand(['showxp', 'heroinfo'])
 def _showxp_say_command(command, index, team=None):
     """Display player's level and xp."""
     player = wcgo.player.Player(index)
-    if player.hero.required_xp is not None:
-        xp_info = '{0}/{1}'.format(player.hero.xp, player.hero.required_xp)
-    else:
-        xp_info = str(player.hero.xp)
-    wcgo.strings.misc_messages['Show XP'].send(index, hero=player.hero, xp=xp_info)
+    wcgo.strings.misc_messages['Hero Info'].send(index, hero=player.hero)
     return CommandReturn.BLOCK
 
 
