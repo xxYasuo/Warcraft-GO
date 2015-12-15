@@ -23,7 +23,7 @@ with ConfigManager(info.basename, info.basename + '_') as _config:
 
     # Add the menu separator convar
     menu_separator = _config.cvar(
-        'menu_separator', ' ', ConVarFlags.NONE, 'The separator in menus.')
+        'menu_separator', ' ', ConVarFlags.NONE, config_strings['Separator'])
 
     _config.section(config_strings['Section:Exp'])
 
