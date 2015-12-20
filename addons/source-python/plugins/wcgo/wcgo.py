@@ -54,13 +54,14 @@ def load():
     if not heroes:
         raise NotImplementedError(
             "There are no heroes on the server")
-    if not cfg.starting_heroes:
+    starting_heroes = cfg.starting_heroes.get_string().split(',')
+    if not starting_heroes:
         raise NotImplementedError(
             "There are no starting heroes defined")
-    for clsid in cfg.starting_heroes:
+    for clsid in starting_heroes:
         if clsid not in heroes:
             raise ValueError(
-                "Invalid starting hero clsid: {0}".format(clsid))
+                "Invalid starting hero clsid: '{0}'".format(clsid))
 
     # Initialize the database and restart the game
     global database
@@ -85,11 +86,12 @@ def _init_player(player):
     """Initialize the player."""
     database.load_player(player)
     hero_classes = wcgo.entities.Hero.get_subclass_dict()
-    for clsid in cfg.starting_heroes:
+    starting_heroes = cfg.starting_heroes.split(',')
+    for clsid in starting_heroes:
         if clsid in hero_classes and clsid not in player.heroes:
             player.heroes[clsid] = hero_classes[clsid](owner=player)
     if player.hero is None:
-        random_clsid = random.choice(cfg.starting_heroes)
+        random_clsid = random.choice(starting_heroes)
         player.hero = player.heroes[random_clsid]
 
 
@@ -199,9 +201,9 @@ def _round_end(event):
         if player.hero is None:
             continue
         key = 'Round {0}'.format('Win' if player.team == winner else 'Loss')
-        xp = cfg.exp_values.get(key, 0)
+        xp = cfg.exp_values[key].get_int()
         player.hero.give_xp(xp)
-        player.gold += cfg.gold_values.get(key, 0)
+        player.gold += cfg.gold_values[key].get_int()
         player.hero.execute_skills('round_end', player=player, winner=winner)
         wcgo.strings.xp_messages[key].send(player.index, xp=xp, hero=player.hero)
 
@@ -209,8 +211,8 @@ def _round_end(event):
 @Event('bomb_planted')
 def _bomb_planted(event):
     player = player_from_event(event, 'userid')
-    player.hero.give_xp(cfg.exp_values.get('Bomb Plant', 0))
-    ally_xp = cfg.exp_values.get('Bomb Plant Team', 0)
+    player.hero.give_xp(cfg.exp_values['Bomb Plant'].get_int())
+    ally_xp = cfg.exp_values['Bomb Plant Team'].get_int()
     for ally in wcgo.player.PlayerIter():
         if ally.team == player.team and ally.userid != player.userid:
             ally.hero.give_xp(ally_xp)
@@ -220,8 +222,8 @@ def _bomb_planted(event):
 @Event('bomb_exploded')
 def _bomb_exploded(event):
     player = player_from_event(event, 'userid')
-    player.hero.give_xp(cfg.exp_values.get('Bomb Explode', 0))
-    ally_xp = cfg.exp_values.get('Bomb Explode Team', 0)
+    player.hero.give_xp(cfg.exp_values['Bomb Explode'].get_int())
+    ally_xp = cfg.exp_values['Bomb Explode Team'].get_int()
     for ally in wcgo.player.PlayerIter():
         if ally.team == player.team and not ally.userid == player.userid:
             ally.hero.give_xp(ally_xp)
@@ -231,8 +233,8 @@ def _bomb_exploded(event):
 @Event('bomb_defused')
 def _bomb_defused(event):
     player = player_from_event(event, 'userid')
-    player.hero.give_xp(cfg.exp_values.get('Bomb Defuse', 0))
-    ally_xp = cfg.exp_values.get('Bomb Defuse Team', 0)
+    player.hero.give_xp(cfg.exp_values['Bomb Defuse'].get_int())
+    ally_xp = cfg.exp_values['Bomb Defuse Team'].get_int()
     for ally in wcgo.player.PlayerIter():
         if ally.team == player.team and not ally.userid == player.userid:
             ally.hero.give_xp(ally_xp)
@@ -242,8 +244,8 @@ def _bomb_defused(event):
 @Event('hostage_follows')
 def _hostage_follows(event):
     player = player_from_event(event, 'userid')
-    player.hero.give_xp(cfg.exp_values.get('Hostage Pick Up', 0))
-    ally_xp = cfg.exp_values.get('Hostage Pick Up Team', 0)
+    player.hero.give_xp(cfg.exp_values['Hostage Pick Up'].get_int())
+    ally_xp = cfg.exp_values['Hostage Pick Up Team'].get_int()
     for ally in wcgo.player.PlayerIter():
         if ally.team == player.team and not ally.userid == player.userid:
             ally.hero.give_xp(ally_xp)
@@ -253,8 +255,8 @@ def _hostage_follows(event):
 @Event('hostage_rescued')
 def _hostage_rescued(event):
     player = player_from_event(event, 'userid')
-    player.hero.give_xp(cfg.exp_values.get('Hostage Rescue', 0))
-    ally_xp = cfg.exp_values.get('Hostage Rescue Team', 0)
+    player.hero.give_xp(cfg.exp_values['Hostage Rescue'].get_int())
+    ally_xp = cfg.exp_values['Hostage Rescue Team'].get_int()
     for ally in wcgo.player.PlayerIter():
         if ally.team == player.team and not ally.userid == player.userid:
             ally.hero.give_xp(ally_xp)
@@ -283,9 +285,9 @@ def _on_player_death(event):
 
     if assister is not None:
         assister.hero.execute_skills('player_assist', player=assister, **eargs)
-        xp = cfg.exp_values.get('Assist', 0)
+        xp = cfg.exp_values['Assist'].get_int()
         assister.hero.give_xp(xp)
-        assister.gold += cfg.gold_values.get('Assist', 2)
+        assister.gold += cfg.gold_values['Assist'].get_int()
         wcgo.strings.xp_messages['Assist'].send(assister.index, xp=xp, hero=assister.hero)
 
     if attacker is None or attacker.userid == victim.userid:
@@ -296,9 +298,9 @@ def _on_player_death(event):
 
     key = 'Headshot' if eargs['headshot'] else 'Kill'
     attacker.hero.execute_skills('player_kill', player=attacker, **eargs)
-    xp = cfg.exp_values.get(key, 0)
+    xp = cfg.exp_values[key].get_int()
     attacker.hero.give_xp(xp)
-    attacker.gold += cfg.gold_values.get(key, 3)
+    attacker.gold += cfg.gold_values[key].get_int()
     wcgo.strings.xp_messages[key].send(attacker.index, xp=xp, hero=attacker.hero)
 
     victim.hero.execute_skills('player_death', player=victim, **eargs)

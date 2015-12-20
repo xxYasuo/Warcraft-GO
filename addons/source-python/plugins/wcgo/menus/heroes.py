@@ -211,10 +211,10 @@ def _current_hero_menu_build(menu, index):
 
     menu.title = menu_options['Current Hero']
     menu.description = '{hero.name} ({hero.level_info})'.format(hero=hero)
-    can_use = player.gold >= wcgo.configs.reset_skills_cost
+    can_use = player.gold >= wcgo.configs.reset_skills_cost.get_int()
     menu.constants = {6: PagedOption(
                 menu_options['Reset Skills'].get_string(
-                    gold=wcgo.configs.reset_skills_cost),
+                    gold=wcgo.configs.reset_skills_cost.get_int()),
                 highlight=can_use,
                 selectable=can_use)}
 
@@ -237,7 +237,7 @@ def _current_hero_menu_select(menu, index, choice):
     if choice.value is None:
         for skill in player.hero.skills:
             skill.level = 0
-        player.gold -= wcgo.configs.reset_skills_cost
+        player.gold -= wcgo.configs.reset_skills_cost.get_int()
         menu_messages['Reset Skills Success'].send(index)
     else:
         skill = choice.value

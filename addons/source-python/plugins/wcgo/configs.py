@@ -1,75 +1,140 @@
 ﻿"""This module contains configurable settings for server operators."""
 
+# Source.Python
+from config.manager import ConfigManager
+from cvars.flags import ConVarFlags
+from translations.strings import LangStrings
+
+# Warcraft: GO
+from wcgo.info import info
+
 # Admins' SteamIDs, separated by commas
 admins = (
     'STEAM_0:0:20178479',  # Mahi
     'STEAM_1:0:120220385',  # Predz
 )
 
-# Amounts of gold gained from objectives
-gold_values = {
+config_strings = LangStrings(info.basename + '/config')
+exp_values = dict()
+gold_values = dict()
 
-    # Kill values
-    'Kill': 2,
-    'Assist': 1,
+# Create the cfg file
+with ConfigManager(info.basename, info.basename + '_') as _config:
 
-    # Round values
-    'Round Win': 3,
-    'Round Loss': 2
-}
+    # Add the menu separator convar
+    menu_separator = _config.cvar(
+        'menu_separator', ' ', ConVarFlags.NONE, config_strings['Separator'])
 
-# Amounts of experience points to gain from objectives
-exp_values = {
+    _config.section(config_strings['Section:Exp'])
 
-    # Kill values
-    'Kill': 30,
-    'Headshot': 45,
-    'Assist': 15,
+    # Add the kill experience configurations
+    exp_values['Kill'] = _config.cvar(
+        'kill_xp', 30, ConVarFlags.NONE, config_strings['Exp:Kill'], 0)
+    exp_values['Headshot'] = _config.cvar(
+        'headshot_xp', 45, ConVarFlags.NONE,
+        config_strings['Exp:Headshot'], 0)
+    exp_values['Assist'] = _config.cvar(
+        'assist_xp', 15, ConVarFlags.NONE,
+        config_strings['Exp:Assist'], 0)
 
-    # Round values
-    'Round Win': 30,
-    'Round Loss': 15,
+    # Add the round experience configurations
+    exp_values['Round Win'] = _config.cvar(
+        'round_win_xp', 30, ConVarFlags.NONE,
+        config_strings['Exp:Round Win'], 0)
+    exp_values['Round Loss'] = _config.cvar(
+        'round_loss_xp', 15, ConVarFlags.NONE,
+        config_strings['Exp:Round Loss'], 0)
 
-    # Bomb values
-    'Bomb Plant': 15,
-    'Bomb Plant Team': 5,
-    'Bomb Explode': 25,
-    'Bomb Explode Team ': 10,
-    'Bomb Defuse': 30,
-    'Bomb Defuse Team ': 15,
+    # Add the bomb experience configurations
+    exp_values['Bomb Plant'] = _config.cvar(
+        'bomb_plant_xp', 15, ConVarFlags.NONE,
+        config_strings['Exp:Bomb Plant'], 0)
+    exp_values['Bomb Plant Team'] = _config.cvar(
+        'bomb_plant_xp_team', 5, ConVarFlags.NONE,
+        config_strings['Exp:Bomb Plant Team'], 0)
+    exp_values['Bomb Explode'] = _config.cvar(
+        'bomb_explode_xp', 25, ConVarFlags.NONE,
+        config_strings['Exp:Bomb Explode'], 0)
+    exp_values['Bomb Explode Team'] = _config.cvar(
+        'bomb_explode_xp_team', 10, ConVarFlags.NONE,
+        config_strings['Exp:Bomb Explode Team'], 0)
+    exp_values['Bomb Defuse'] = _config.cvar(
+        'bomb_defuse_xp', 30, ConVarFlags.NONE,
+        config_strings['Exp:Bomb Defuse'], 0)
+    exp_values['Bomb Defuse Team'] = _config.cvar(
+        'bomb_defuse_xp_team', 15, ConVarFlags.NONE,
+        config_strings['Exp:Bomb Defuse Team'], 0)
 
-    # Hostage values
-    'Hostage Pick Up': 5,
-    'Hostage Pick Up Team': 0,
-    'Hostage Rescue': 25,
-    'Hostage Rescue Team': 10
-}
+    # Add the hostage experience configurations
+    exp_values['Hostage Pick Up'] = _config.cvar(
+        'hostage_pickup_xp', 5, ConVarFlags.NONE,
+        config_strings['Exp:Hostage Pick Up'], 0)
+    exp_values['Hostage Pick Up Team'] = _config.cvar(
+        'hostage_pickup_xp_team', 0, ConVarFlags.NONE,
+        config_strings['Exp:Hostage Pick Up Team'], 0)
+    exp_values['Hostage Rescue'] = _config.cvar(
+        'hostage_rescue_xp', 25, ConVarFlags.NONE,
+        config_strings['Exp:Hostage Rescue'], 0)
+    exp_values['Hostage Rescue Team'] = _config.cvar(
+        'hostage_rescue_xp_team', 10, ConVarFlags.NONE,
+        config_strings['Exp:Hostage Rescue Team'], 0)
 
-# Multiplier for experience points gained upon events
-exp_multiplier = 1.0
+    # Add the multiplier configuration
+    exp_multiplier = _config.cvar(
+        'exp_multiplier', 1.0, ConVarFlags.NONE,
+        config_strings['Exp:Multiplier'])
 
-# Base value for the experience points required to level up 
-required_xp_base = 100
+    # Add the required XP configurations
+    required_xp_base = _config.cvar(
+        'required_xp_base', 100, ConVarFlags.NONE,
+        config_strings['Exp:Required Base'])
+    # This value gets added to required XP for every level
+    required_xp_addition = _config.cvar(
+        'required_xp_addition', 20, ConVarFlags.NONE,
+        config_strings['Exp:Required Addition'])
 
-# This value gets added to required XP for every level
-required_xp_addition = 20
+    _config.section(config_strings['Section:Gold'])
 
-# How much gold does it cost to reset hero's skills
-reset_skills_cost = 50
+    # Add the gold gain kill configurations
+    gold_values['Kill'] = _config.cvar(
+        'gold_per_kill', 2, ConVarFlags.NONE,
+        config_strings['Gold:Kill'])
+    gold_values['Headshot'] = _config.cvar(
+        'gold_per_headshot', 3, ConVarFlags.NONE,
+        config_strings['Gold:Headshot'])
+    gold_values['Assist'] = _config.cvar(
+        'gold_per_assist', 2, ConVarFlags.NONE,
+        config_strings['Gold:Assist'])
 
-# Starting heroes for when an user joins the server for the first time
-starting_heroes = (
-    'Predz_Debug_Hero',
-)
+    # Add the gold gain round configurations
+    gold_values['Round Win'] = _config.cvar(
+        'gold_per_win', 3, ConVarFlags.NONE, config_strings['Gold:Round Win'])
+    gold_values['Round Loss'] = _config.cvar(
+        'gold_per_win', 2, ConVarFlags.NONE, config_strings['Gold:Round Loss'])
 
-# Items' default sell value's multiplier
-item_sell_value_multiplier = 0.5
+    # Add the skill reset cost convar
+    reset_skills_cost = _config.cvar(
+        'reset_skills_cost', 50, ConVarFlags.NONE,
+        config_strings['Gold:Reset Skills Cost'], 0)
 
-# Menu separator
-menu_separator = ' '
+    # Add the item sell value multiplier convar
+    item_sell_value_multiplier = _config.cvar(
+        'item_sell_value_multiplier', 0.5, ConVarFlags.NONE,
+        config_strings['Gold:Item Sell Value Multiplier'])
 
-# Hero category to use when no category is defined
-default_hero_category = 'Others'
+    _config.section(config_strings['Section:Hero'])
 
-# Item category to use when no category is defined
-default_item_category = 'Others'
+    # Add the default category configurations
+    default_hero_category = _config.cvar(
+        'default_hero_category', 'Others', ConVarFlags.NONE,
+        config_strings['Hero:Default Hero Category'])
+    default_item_category = _config.cvar(
+        'default_item_category', 'Others', ConVarFlags.NONE,
+        config_strings['Hero:Default Item Category'])
+
+    # Add the starting hero convar
+    starting_heroes = _config.cvar(
+        'starting_heroes', 'Predz_Debug_Hero', ConVarFlags.NONE,
+        config_strings['Hero:Starting Heroes'])
+    starting_heroes.Notes.append(
+        config_strings['Hero:Starting Heroes:Notes:0'])

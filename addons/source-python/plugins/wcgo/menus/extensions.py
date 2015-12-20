@@ -20,15 +20,17 @@ class PagedMenu(menus.PagedMenu):
 
     def __init__(
             self, data=None, select_callback=None, build_callback=None,
-            description=None, title=None,
-            top_seperator=wcgo.configs.menu_separator,
-            bottom_seperator=wcgo.configs.menu_separator,
-            fill=False, constants=None, previous_menu=None, next_menu=None,
-            display_page_info=False):
+            description=None, title=None, top_separator=None,
+            bottom_separator=None, fill=False, constants=None,
+            previous_menu=None, next_menu=None, display_page_info=False):
         """Initializes a new PagedMenu instance."""
+        if top_separator is None:
+            top_separator = wcgo.configs.menu_separator.get_string()
+        if bottom_separator is None:
+            bottom_separator = wcgo.configs.menu_separator.get_string()
         super().__init__(
             data, select_callback, build_callback,
-            description, title, top_seperator, bottom_seperator, fill)
+            description, title, top_separator, bottom_separator, fill)
         self.constants = constants if constants is not None else {}
         self.previous_menu = previous_menu
         self.next_menu = next_menu
@@ -59,9 +61,9 @@ class PagedMenu(menus.PagedMenu):
             buffer += menus.base._translate_text(
                 self.description, player_index) + '\n'
 
-        # Set the top seperator if present
-        if self.top_seperator is not None:
-            buffer += self.top_seperator + '\n'
+        # Set the top separator if present
+        if self.top_separator is not None:
+            buffer += self.top_separator + '\n'
 
         return buffer
 
@@ -115,9 +117,9 @@ class PagedMenu(menus.PagedMenu):
         """Prepares the footer for the menu."""
         buffer = ''
 
-        # Set the bottom seperator if present
-        if self.bottom_seperator is not None:
-            buffer += '{0}\n'.format(self.bottom_seperator)
+        # Set the bottom separator if present
+        if self.bottom_separator is not None:
+            buffer += '{0}\n'.format(self.bottom_separator)
 
         # Add "Previous" option
         option_previous = menus.PagedOption(
