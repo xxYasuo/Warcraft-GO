@@ -86,11 +86,12 @@ def _init_player(player):
     """Initialize the player."""
     database.load_player(player)
     hero_classes = wcgo.entities.Hero.get_subclass_dict()
-    for clsid in cfg.starting_heroes:
+    starting_heroes = cfg.starting_heroes.split(',')
+    for clsid in starting_heroes:
         if clsid in hero_classes and clsid not in player.heroes:
             player.heroes[clsid] = hero_classes[clsid](owner=player)
     if player.hero is None:
-        random_clsid = random.choice(cfg.starting_heroes)
+        random_clsid = random.choice(starting_heroes)
         player.hero = player.heroes[random_clsid]
 
 
