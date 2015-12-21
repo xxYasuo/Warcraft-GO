@@ -5,10 +5,15 @@ import random
 
 # Source.Python
 from messages import SayText2
+from translations.strings import LangStrings
 
 # Warcraft: GO
 from wcgo.cooldown import cooldown, cooldownf
 from wcgo.entities import Hero, Skill
+from wcgo.info import info
+
+# Globals
+_debug_messages = LangStrings(info.basename + '/heroes/debug')
 
 
 # =====================================================================
@@ -34,7 +39,7 @@ class Health_Increase(Skill):
 class Lifesteal(Skill):
     "Retrieve 60% of damage back as health, on chance."
     max_level = 8
-    _msg = '>> \x04Lifesteal: \x02Stole {health} health from enemy'
+    _msg = SayText2(_debug_messages['Lifesteal'])
 
     def player_pre_attack(self, player, victim, info, **eargs):
         if player.team == victim.team:
@@ -43,7 +48,7 @@ class Lifesteal(Skill):
         if random.randint(0, 100) <= chance:
             health = int(info.damage * 0.6)
             player.health += health
-            SayText2(self._msg.format(health=health)).send(player.index)
+            self._msg.send(player.index, health=health)
 
 
 @Predz_Debug_Hero.skill
@@ -61,8 +66,8 @@ class Longjump(Skill):
 class Burst_of_Speed(Skill):
     "On ultimate you gain massive speed."
     max_level = 8
-    _msg = '>> \x04Burst of Speed: \x03You gained {speed}% more speed for 3 seconds.'
-    _cd_msg = '>> \x04Burst of Speed: \x09Your cooldown is {remaining_cd:0.0f} more seconds!'
+    _msg = SayText2(_debug_messages['Burst_of_Speed'])
+    _cd_msg = SayText2(_debug_messages['Burst_of_Speed:Cooldown'])
 
     def round_start(self, player, **eargs):
         self.player_ultimate.remaining_cooldown = 0
@@ -71,7 +76,7 @@ class Burst_of_Speed(Skill):
     def player_ultimate(self, player, **eargs):
         speed = 0.1 * self.level * player.speed
         player.shift_property('speed', speed, 3)
-        SayText2(self._msg.format(speed=self.level * 10)).send(player.index)
+        self._msg.send(player.index, speed=self.level * 10)
 
 
 # =====================================================================
@@ -88,8 +93,8 @@ class Mahi_Debug_Hero(Hero):
 class Burn_Until_Hit(Skill):
     "Burn your victims until you're hit."
     max_level = 1
-    _msg_burn = '>> \x04Burn: \x02You ignited {name}'
-    _msg_hit = SayText2('>> \x04Hit: \x02Your ignites went off for being hit')
+    _msg_burn = SayText2(_debug_messages['Burn_Until_Hit:Burn'])
+    _msg_hit = SayText2(_debug_messages['Burn_Until_Hit:Hit'])
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -100,7 +105,7 @@ class Burn_Until_Hit(Skill):
             return
         if victim.userid not in self._burns:
             self._burns[victim.userid] = victim.burn()
-            SayText2(self._msg_burn.format(name=victim.name)).send(player.index)
+            self._msg_burn.send(player.index, name=victim.name)
 
     def player_victim(self, player, **eargs):
         for burn in self._burns.values():
@@ -135,7 +140,7 @@ class Enrage(Skill):
 class Movement_Speed_Stack(Skill):
     "Gain movement speed on attack, release on ultimate."
     max_level = 3
-    _cd_msg = '>> \x04Speed Stack: \x03You have to keep running for {remaining_cd:0.0f} more seconds!'
+    _cd_msg = SayText2(_debug_messages['Movement_Speed_Stack:Cooldown'])
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
