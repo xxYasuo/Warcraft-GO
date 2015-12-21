@@ -1,6 +1,7 @@
 """Module for supplying a level up effect."""
 
 # Source.Python
+from colors import Color
 from entities.entity import Entity
 from listeners.tick import tick_delays
 from mathlib import NULL_VECTOR
@@ -26,7 +27,7 @@ def level_up(player):
     entity.teleport(player.origin, None, None)
     entity.base_spread = 10
     entity.spread_speed = 60
-    entity.initial = 0
+    entity.initial_state = 0
     entity.speed = 105
     entity.rate = 50
     entity.start_size = 7
@@ -36,7 +37,7 @@ def level_up(player):
     entity.angles = NULL_VECTOR
     entity.render_mode = 18
     entity.render_amt = 100
-    entity.render_color = Color(255 255 3)
+    entity.render_color = Color(255, 255, 3)
     entity.add_output('SmokeMaterial effects/yellowflare.vmt')
     entity.turn_on()
     entity.set_parent(player.pointer, -1)
