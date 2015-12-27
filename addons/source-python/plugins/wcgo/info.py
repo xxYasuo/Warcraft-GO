@@ -12,5 +12,4 @@ info.version = ""
 info.basename = "wcgo"
 info.url = ""
 info.convar = PublicConVar(
-    info.basename + "_version", info.version,
-    ConVarFlags.NONE, info.name + ' Version')
+    info.basename + "_version", info.version, info.name + ' Version')
