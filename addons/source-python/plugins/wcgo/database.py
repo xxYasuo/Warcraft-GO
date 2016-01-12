@@ -4,6 +4,7 @@
 import sqlite3
 
 # Warcraft: GO
+import wcgo.configs as cfg
 import wcgo.entities
 
 
@@ -71,6 +72,11 @@ class Database:
         else:
             steamid = player.steamid
         player.gold, active_hero_clsid = self._get_player_data(steamid)
+
+        if active_hero_clsid not in hero_classes:
+            starting_heroes = cfg.starting_heroes.get_string().split(',')
+            active_hero_clsid = starting_heroes[0]
+
         for clsid, level, xp in self._get_heroes_data(steamid):
             if clsid not in hero_classes:
                 continue
