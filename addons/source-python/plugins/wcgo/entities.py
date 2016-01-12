@@ -82,6 +82,7 @@ class Hero(_LevelableEntity):
 
     _passive_classes = tuple()
     _skill_classes = tuple()
+    _ability_classes = tuple()
     restricted_items = tuple()
     category = cfg.default_hero_category.get_string()
     e_level_up = wcgo.event.Event()
@@ -92,7 +93,12 @@ class Hero(_LevelableEntity):
         self._xp = xp
         self.passives = [cls(owner=self) for cls in self._passive_classes]
         self.skills = [cls(owner=self) for cls in self._skill_classes]
+        self.abilities = [cls for cls in self.skills if type(cls) in self._ability_classes]
+        self.abilities.sort(key=lambda skill: skill.ability)
         self.items = []
+
+        # We store the same skill instance in the ability list to ensure the abilities when activated,
+        # have the same data as the core.
 
     @_LevelableEntity.level.setter
     def level(self, value):
@@ -169,6 +175,13 @@ class Hero(_LevelableEntity):
         """Add a skill class to hero's skill classes."""
         cls._skill_classes += (skill_cls,)
         return skill_cls
+
+    @classmethod
+    def ability(cls, ability_cls):
+        """Add a ability class to hero's ability and skill classes."""
+        cls._skill_classes += (ability_cls,)
+        cls._ability_classes += (ability_cls,)
+        return ability_cls
 
     def execute_skills(self, method_name, **eargs):
         """Execute the hero's skills."""

@@ -148,6 +148,18 @@ def _execute_spawn_message(event):
 
 # Say command and client command decorations
 
+@ClientCommand('ability')
+@SayCommand('ability')
+def _ultimate_say_command(command, index, team=None):
+    player = wcgo.player.Player(index)
+    ability_index = int(command.get_arg_string())
+    if player.team in (2, 3) and player.isdead is False:
+        if ability_index <= len(player.hero.abilities):
+            ability = player.hero.abilities[ability_index-1]
+            ability.execute_method('player_use', player=player)
+            player.hero.execute_skills('player_ability', player=player, ability=ability)
+    return CommandReturn.BLOCK
+
 @ClientCommand('wcgo')
 @SayCommand('wcgo')
 def _main_say_command(command, index, team=None):
