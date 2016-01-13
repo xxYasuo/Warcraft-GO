@@ -96,6 +96,7 @@ class Hero(_LevelableEntity):
         self.abilities = [cls for cls in self.skills if type(cls) in self._ability_classes]
         self.abilities.sort(key=lambda skill: skill.ability)
         self.items = []
+        self.requirements = '{} Gold'.format(self.cost)
 
         # We store the same skill instance in the ability list to ensure the abilities when activated,
         # have the same data as the core.
@@ -163,6 +164,12 @@ class Hero(_LevelableEntity):
         if self.is_max_level():
             return str(self.xp)
         return '{hero.xp}/{hero.required_xp}'.format(hero=self)
+
+    @classmethod
+    def meet_requirements(cls, player):
+        if player.gold >= cls.cost:
+            return True
+        return False
 
     @classmethod
     def passive(cls, passive_cls):

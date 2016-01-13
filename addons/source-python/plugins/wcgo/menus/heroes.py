@@ -23,8 +23,11 @@ def _buy_hero_menu_build(menu, index):
     menu.clear()
 
     menu.title = hero_cls.name
-    menu.description = hero_cls.description
-    can_use = player.gold >= hero_cls.cost
+    
+    description = '{description}\nTo Unlock: {requirements}'
+    menu.description = description.format(description=hero_cls.description,
+        requirements=hero_cls.requirements)
+    can_use = hero_cls.meet_requirements(player)
     buy_option = PagedOption(
         menu_options['Buy'], hero_cls, highlight=can_use, selectable=can_use)
     menu.constants = {6: buy_option}
