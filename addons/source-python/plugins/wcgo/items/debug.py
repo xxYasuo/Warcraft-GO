@@ -1,7 +1,7 @@
 """Debug items for WCGO testing."""
 
 # Source.Python
-from listeners.tick import tick_delays, TickRepeat
+from listeners.tick import Delay, TickRepeat
 
 # Warcraft: GO
 from wcgo.cooldown import cooldown, cooldownf
@@ -41,13 +41,13 @@ class Regeneration_Suit(Item):
         if self._delay is not None:
             self._delay.cancel()
         self._repeat.pause()
-        self._delay = tick_delays.delay(5, self._cancel_pause)
+        self._delay = Delay(5, self._cancel_pause)
 
     def player_victim(self, **eargs):
         if self._delay is not None:
             self._delay.cancel()
         self._repeat.pause()
-        self._delay = tick_delays.delay(5, self._cancel_pause)
+        self._delay = Delay(5, self._cancel_pause)
 
     def _cancel_pause(self):
         self._repeat.resume()
