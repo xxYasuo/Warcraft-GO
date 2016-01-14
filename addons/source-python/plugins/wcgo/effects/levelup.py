@@ -3,7 +3,7 @@
 # Source.Python
 from colors import Color
 from entities.entity import Entity
-from listeners.tick import tick_delays
+from listeners.tick import Delay
 from mathlib import NULL_VECTOR
 
 # Warcraft: GO
@@ -41,7 +41,7 @@ def level_up(player):
     entity.add_output('SmokeMaterial effects/yellowflare.vmt')
     entity.turn_on()
     entity.set_parent(player.pointer, -1)
-    tick_delays.delay(2, _remove_smoke, entity)
+    Delay(2, _remove_smoke, entity)
 
 
 def _remove_smoke(entity):
