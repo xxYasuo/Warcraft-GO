@@ -38,6 +38,10 @@ class _Entity:
         """Get the class's description."""
         return cls.__doc__ if cls.__doc__ is not None else ''
 
+    @wcgo.utilities.ClassProperty
+    def requirements(cls):
+        return '{} Gold'.format(cls.cost)
+
 
 class _LevelableEntity(_Entity):
     """Entity class which implements a level system."""
@@ -96,7 +100,6 @@ class Hero(_LevelableEntity):
         self.abilities = [cls for cls in self.skills if type(cls) in self._ability_classes]
         self.abilities.sort(key=lambda skill: skill.ability)
         self.items = []
-        self.requirements = '{} Gold'.format(self.cost)
 
         # We store the same skill instance in the ability list to ensure the abilities when activated,
         # have the same data as the core.
