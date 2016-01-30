@@ -150,7 +150,7 @@ def _execute_spawn_message(event):
 
 @ClientCommand('ability')
 @SayCommand('ability')
-def _ultimate_say_command(command, index, team=None):
+def _ability_say_command(command, index, team=None):
     player = wcgo.player.Player(index)
     ability_index = int(command.get_arg_string())
     if player.team in (2, 3) and player.isdead is False:
