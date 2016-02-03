@@ -20,9 +20,7 @@ class PlayerIter(SPPlayerIter):
             yield Player(index_from_edict(edict))
 
 # Set the filters to be the same as SP's
-# You could also make this a dict copy instead of the full object
-#   if you wish to add more filters specific to wcgo.
-PlayerIter._filters = SPPlayerIter.filters
+PlayerIter._filters = dict(SPPlayerIter.filters)
 
 
 class Player(easyplayer.EasyPlayer):
