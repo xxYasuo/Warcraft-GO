@@ -2,7 +2,7 @@
 
 # Source.Python
 from entities.helpers import index_from_edict
-from filters.iterator import PlayerIter as SPPlayerIter
+from filters.players import PlayerIter as SPPlayerIter
 from players import PlayerGenerator
 from players.helpers import index_from_userid
 
