@@ -123,8 +123,6 @@ def _save_data_on_spawn(event):
 
 def _on_hero_level_up(hero, player, levels):
     """Alarm the player and play a sound when a hero level's up."""
-    wcgo.strings.misc_messages['Level Up'].send(player.index, level=hero.level)
-    wcgo.menus.heroes.current_hero_menu.send(player.index)
     wcgo.effects.level_up(player)
     if player.steamid == 'BOT':
         skills = [skill for skill in hero.skills if not skill.is_max_level()]
@@ -134,6 +132,9 @@ def _on_hero_level_up(hero, player, levels):
                 skill.level += 1
                 if hero.skill_points == 0:
                     break
+    else:
+        wcgo.strings.misc_messages['Level Up'].send(player.index, level=hero.level)
+        wcgo.menus.heroes.current_hero_menu.send(player.index)
 
 
 @Event('player_spawn')
