@@ -2,7 +2,7 @@
 
 # Source.Python
 from entities.helpers import index_from_edict
-from filters.iterator import _IterObject
+from filters.players import PlayerIter as SPPlayerIter
 from players import PlayerGenerator
 from players.helpers import index_from_userid
 
@@ -10,7 +10,7 @@ from players.helpers import index_from_userid
 import easyplayer
 
 
-class PlayerIter(_IterObject):
+class PlayerIter(SPPlayerIter):
     """Class for iterating over all WCGO players."""
 
     @staticmethod
@@ -18,6 +18,9 @@ class PlayerIter(_IterObject):
         """Iterate over all WCGO player objects."""
         for edict in PlayerGenerator():
             yield Player(index_from_edict(edict))
+
+# Set the filters to be the same as SP's
+PlayerIter._filters = dict(SPPlayerIter.filters)
 
 
 class Player(easyplayer.EasyPlayer):
