@@ -356,10 +356,13 @@ def _pre_on_take_damage(args):
         'info': info,
     }
     # Adds the weapon argument dependent on scenario
-    if attacker is not None and attacker.active_weapon != -1:
-        eargs['weapon'] = Weapon(index_from_inthandle(attacker.active_weapon))
+    if info.attacker == info.inflictor:
+        if attacker is not None and attacker.active_weapon != -1:
+            eargs['weapon'] = Weapon(index_from_inthandle(attacker.active_weapon))
+        else:
+            eargs['weapon'] = None
     else:
-        eargs['weapon'] = None
+        eargs['weapon'] = Weapon(info.inflictor)
 
     if attacker is None or attacker.userid == victim.userid:
         victim.hero.execute_skills('player_pre_self_injury', player=victim, **eargs)
