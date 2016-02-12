@@ -153,7 +153,7 @@ def _execute_spawn_message(event):
 @SayCommand('ability')
 def _ability_say_command(command, index, team=None):
     player = wcgo.player.Player(index)
-    ability_index = int(command.get_arg_string())
+    ability_index = int(command.arg_string)
     if player.team in (2, 3) and player.isdead is False:
         if ability_index <= len(player.hero.abilities):
             ability = player.hero.abilities[ability_index-1]
@@ -198,7 +198,7 @@ def _execute_player_skills(event):
         return  # Bots sometimes spawn before their data is loaded
     eargs = event.variables.as_dict()
     del eargs['userid']
-    player.hero.execute_skills(event.get_name(), player=player, **eargs)
+    player.hero.execute_skills(event.name, player=player, **eargs)
 
 
 @Event('round_start')
