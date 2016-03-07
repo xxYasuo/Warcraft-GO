@@ -40,7 +40,11 @@ _DATABASE_PATH = PLUGIN_DATA_PATH / 'wcgo.db'
 
 def player_from_event(event, key):
     """Fetch player from an event's key."""
-    if event[key]:
+    try:
+        userid = event[key]
+    except KeyError:
+        userid = None
+    if userid and userid is not None:
         return wcgo.player.Player.from_userid(event[key])
     return None
 
@@ -112,8 +116,8 @@ def _save_data_on_disconnect(event):
 @Event('player_spawn')
 def _save_data_on_spawn(event):
     """Save the player's data when he spawns."""
-    if event['teamnum'] in (2, 3):
-        player = player_from_event(event, 'userid')
+    player = player_from_event(event, 'userid')
+    if player.team in (2, 3):
         if player.steamid == 'BOT':
             return  # No need to save bots on spawn, only on disconnect
         database.save_player(player)
@@ -140,8 +144,8 @@ def _on_hero_level_up(hero, player, levels):
 @Event('player_spawn')
 def _execute_spawn_message(event):
     """Send a message informing player of his level and XP."""
-    if event['teamnum'] in (2, 3):
-        player = player_from_event(event, 'userid')
+    player = player_from_event(event, 'userid')
+    if player.team in (2, 3):
         if player.steamid == 'BOT' and player.hero is None:
             return  # Bots sometimes spawn before their data is loaded
         wcgo.strings.misc_messages['Hero Info'].send(player.index, hero=player.hero)
@@ -278,7 +282,8 @@ def _hostage_rescued(event):
 
 @Event('player_spawn')
 def _on_player_spawn(event):
-    if event['teamnum'] in (2, 3):
+    player = player_from_event(event, 'userid')
+    if player.team in (2, 3):
         _execute_player_skills(event)
 
 
