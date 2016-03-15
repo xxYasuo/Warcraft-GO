@@ -158,7 +158,7 @@ def _execute_spawn_message(event):
 def _ability_say_command(command, index, team=None):
     player = wcgo.player.Player(index)
     ability_index = int(command.arg_string)
-    if player.team in (2, 3) and player.dead is False:
+    if player.team in (2, 3) and not player.dead:
         if ability_index <= len(player.hero.abilities):
             ability = player.hero.abilities[ability_index-1]
             ability.execute_method('player_use', player=player)
@@ -186,7 +186,7 @@ def _showxp_say_command(command, index, team=None):
 @SayCommand('ultimate')
 def _ultimate_say_command(command, index, team=None):
     player = wcgo.player.Player(index)
-    if player.team in (2, 3) and player.isdead is False:
+    if player.team in (2, 3) and not player.dead:
         player.hero.execute_skills('player_ultimate', player=player)
     else:
         wcgo.strings.misc_messages['Ultimate Failed'].send(index)
