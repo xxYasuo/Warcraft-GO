@@ -3,9 +3,6 @@
 # Python 3
 import time
 
-# Source.Python
-from messages import SayText2
-
 
 class UnboundCooldownMethod:
     """Decorator for the unbound methods of classes."""
@@ -80,11 +77,9 @@ class _BoundCooldownMethod:
     def _send_message(self, player_index):
         """Send the message to a player."""
         if self.message is not None:
-            message = self.message.format(
-                skill_name=self._skill.name,
-                remaining_cd=self.remaining_cooldown,
-                maximum_cd=self.cooldown)
-            SayText2(message).send(player_index)
+            self.message.send(
+                player_index, skill_name=self._skill.name,
+                remaining_cd=self.remaining_cooldown, maximum_cd=self.cooldown)
 
 
 class StaticCooldownMethod(_BoundCooldownMethod):
